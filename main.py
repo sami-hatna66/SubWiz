@@ -36,7 +36,20 @@ class MainWindow(QMainWindow):
         self.workPanel = QWidget()
         self.centreHBL.addWidget(self.workPanel, stretch = 1)
 
+        qApp.installEventFilter(self)
+
         self.showMaximized()
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.KeyPress and self.video.path is not None and source is self:
+            if event.key() == Qt.Key_Space:
+                self.control.playPauseAction()
+            elif event.key() == Qt.Key_Right:
+                self.control.forward(1)
+            elif event.key() == Qt.Key_Left:
+                self.control.back(1)
+        return False
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
