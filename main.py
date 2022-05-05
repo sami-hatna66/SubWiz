@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from VideoWidget import VideoWidget
 from Timeline import Timeline
+from ControlBar import ControlBar, SpeedWidget
 import sys
 
 class MainWindow(QMainWindow):
@@ -16,7 +17,13 @@ class MainWindow(QMainWindow):
 
         self.videoTimelineVBL = QVBoxLayout()
         self.video = VideoWidget()
+        #---------------------------------------------------------------------------------------------------------------
+        self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
+        self.video.initVideo()
+        #---------------------------------------------------------------------------------------------------------------
         self.videoTimelineVBL.addWidget(self.video)
+        self.control = ControlBar(self.video)
+        self.videoTimelineVBL.addWidget(self.control)
         self.timelineSA = QScrollArea()
         self.timelineSA.setFocusPolicy(Qt.NoFocus)
         self.timelineSA.setWidgetResizable(True)

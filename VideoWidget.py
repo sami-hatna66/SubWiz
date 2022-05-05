@@ -16,16 +16,23 @@ class VideoWidget(QVideoWidget):
 
         self.placeholderLBL = QLabel("Drag file or click", self)
 
+        self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+
         self.setAcceptDrops(True)
 
         self.show()
+
+    def getDuration(self):
+        if self.path is not None:
+            return self.mediaPlayer.duration()
+        else:
+            return 0
 
     def setPath(self, newPath):
         self.path = newPath
 
     def initVideo(self):
         self.placeholderLBL.setParent(None)
-        self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.mediaPlayer.setVideoOutput(self)
         self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.path)))
         self.mediaPlayer.play()
