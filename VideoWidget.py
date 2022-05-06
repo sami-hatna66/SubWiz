@@ -4,15 +4,13 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import os
-import cv2
 
 class VideoWidget(QVideoWidget):
     path = None
     mediaPlayer = None
     placeholderLBL = None
-    timeline = None
 
-    def __init__(self, timeline, path = None):
+    def __init__(self, path = None):
         super(VideoWidget, self).__init__()
         self.path = path
 
@@ -20,20 +18,13 @@ class VideoWidget(QVideoWidget):
 
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
 
-        self.timeline = timeline
-        self.mediaPlayer.positionChanged.connect(self.timeline.update)
-
         self.setAcceptDrops(True)
 
         self.show()
 
     def getDuration(self):
         if self.path is not None:
-            vCap = cv2.VideoCapture(self.path)
-            fps = vCap.get(cv2.CAP_PROP_FPS)
-            frameTotal = vCap.get(cv2.CAP_PROP_FRAME_COUNT)
-            duration = float(frameTotal) / float(fps)
-            return duration
+            return self.mediaPlayer.duration()
         else:
             return 0
 
@@ -45,10 +36,6 @@ class VideoWidget(QVideoWidget):
         self.mediaPlayer.setVideoOutput(self)
         self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.path)))
         self.mediaPlayer.play()
-        self.timeline.duration = self.getDuration()
-        self.timeline.setFixedWidth(self.timeline.duration * self.timeline.scale)
-        self.mediaPlayer.positionChanged.connect(self.timeline.setPlayheadPos)
-        self.timeline.update()
 
     def mousePressEvent(self, QMouseEvent):
         if self.path is None:

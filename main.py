@@ -15,10 +15,8 @@ class MainWindow(QMainWindow):
         self.centreHBL = QHBoxLayout()
         self.centre.setLayout(self.centreHBL)
 
-        self.timeline = Timeline()
-        self.video = VideoWidget(self.timeline)
-
         self.videoTimelineVBL = QVBoxLayout()
+        self.video = VideoWidget()
         #---------------------------------------------------------------------------------------------------------------
         self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
         self.video.initVideo()
@@ -30,6 +28,7 @@ class MainWindow(QMainWindow):
         self.timelineSA.setFocusPolicy(Qt.NoFocus)
         self.timelineSA.setWidgetResizable(True)
         self.timelineSA.setFixedHeight(210)
+        self.timeline = Timeline()
         self.timelineSA.setWidget(self.timeline)
         self.videoTimelineVBL.addWidget(self.timelineSA)
         self.centreHBL.addLayout(self.videoTimelineVBL, stretch = 2)
