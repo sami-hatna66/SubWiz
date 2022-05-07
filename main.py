@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from VideoWidget import VideoWidget
 from Timeline import Timeline
-from ControlBar import ControlBar, SpeedWidget
+from ControlBar import ControlBar
+from WorkPanel import WorkPanel
 import sys
 
 class MainWindow(QMainWindow):
@@ -34,8 +35,11 @@ class MainWindow(QMainWindow):
         self.videoTimelineVBL.addWidget(self.timelineSA)
         self.centreHBL.addLayout(self.videoTimelineVBL, stretch = 2)
 
-        self.workPanel = QWidget()
-        self.centreHBL.addWidget(self.workPanel, stretch = 1)
+        self.workSA = QScrollArea()
+        self.workSA.setWidgetResizable(True)
+        self.workPanel = WorkPanel()
+        self.workSA.setWidget(self.workPanel)
+        self.centreHBL.addWidget(self.workSA, stretch = 1)
 
         qApp.installEventFilter(self)
 
