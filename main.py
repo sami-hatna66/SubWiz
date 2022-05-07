@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         self.video.initVideo()
         #---------------------------------------------------------------------------------------------------------------
         self.videoTimelineVBL.addWidget(self.video)
-        self.control = ControlBar(self.video)
+        self.control = ControlBar(self.video, self.timeline)
         self.videoTimelineVBL.addWidget(self.control)
         self.timelineSA = QScrollArea()
         self.timelineSA.setFocusPolicy(Qt.NoFocus)

@@ -11,14 +11,34 @@ class Timeline(QWidget):
     clicking = False
     playheadPos = 0
 
+    playheadChanged = pyqtSignal(int, float)
+
     def __init__(self):
         super(Timeline, self).__init__()
         
         self.setAttribute(Qt.WA_StyledBackground)
-        self.setFixedSize(300, 200)
+        self.setFixedSize(0, 200)
         self.setStyleSheet("border: 0px;")
 
         self.show()
+
+    def zoomIn(self):
+        if self.scaleIndex < len(self.scaleList) - 1:
+            intermediary = self.posToTime(self.playheadPos)
+            self.scaleIndex += 1
+            self.scale = self.scaleList[self.scaleIndex]
+            self.setPlayheadPos(intermediary)
+            self.setFixedSize(self.duration * self.scale, 200)
+            self.update()
+
+    def zoomOut(self):
+        if self.scaleIndex > 0:
+            intermediary = self.posToTime(self.playheadPos)
+            self.scaleIndex -= 1
+            self.scale = self.scaleList[self.scaleIndex]
+            self.setPlayheadPos(intermediary)
+            self.setFixedSize(self.duration * self.scale, 200)
+            self.update()
 
     def setPlayheadPos(self, pos):
         pos = pos / 1000 * self.scale
@@ -29,6 +49,24 @@ class Timeline(QWidget):
             self.playheadPos = self.duration * self.scale
         else:
             self.playheadPos = pos
+
+    def posToTime(self, pos):
+        return (pos / self.scale) * 1000
+
+    def mousePressEvent(self, QMouseEvent):
+        self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
+        self.update()
+        self.playheadChanged.emit(self.playheadPos, self.scale)
+        self.clicking = True
+
+    def mouseMoveEvent(self, QMouseEvent):
+        if self.clicking:
+            self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
+            self.update()
+            self.playheadChanged.emit(self.playheadPos, self.scale)
+
+    def mouseReleaseEvent(self, QMouseEvent):
+        self.clicking = False
 
     def paintEvent(self, QPaintEvent):
         painter = QPainter()

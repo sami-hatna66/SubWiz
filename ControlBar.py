@@ -5,12 +5,14 @@ from datetime import timedelta
 
 class ControlBar(QWidget):
     videoInstance = None
+    timelineInstance = None
     isPaused = False
     duration = None
 
-    def __init__(self, videoInstance):
+    def __init__(self, videoInstance, timelineInstance):
         super(ControlBar, self).__init__()
         self.videoInstance = videoInstance
+        self.timelineInstance = timelineInstance
 
         self.layout = QHBoxLayout()
         self.layout.setSpacing(5)
@@ -36,9 +38,11 @@ class ControlBar(QWidget):
         self.layout.addStretch()
 
         self.zoomInBTN = QPushButton("+")
+        self.zoomInBTN.clicked.connect(self.timelineInstance.zoomIn)
         self.layout.addWidget(self.zoomInBTN)
 
         self.zoomOutBTN = QPushButton("-")
+        self.zoomOutBTN.clicked.connect(self.timelineInstance.zoomOut)
         self.layout.addWidget(self.zoomOutBTN)
 
         self.duration = str(timedelta(seconds=self.videoInstance.getDuration())).split(".")[0]
@@ -105,6 +109,7 @@ class SpeedWidget(QWidget):
         self.buttonList = []
         self.activeButtonIndex = 3
         self.speedList = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
+        self.notifyIntervalList = [4000, 2000, 1333, 1000, 800, 666, 571, 500]
 
         for speed in self.speedList:
             temp = QPushButton(str(speed) + "x")
@@ -123,3 +128,4 @@ class SpeedWidget(QWidget):
         self.buttonList[self.activeButtonIndex].setStyleSheet("color: red;")
         if self.videoInstance.path is not None:
             self.videoInstance.mediaPlayer.setPlaybackRate(self.speedList[self.activeButtonIndex])
+            self.videoInstance.mediaPlayer.setNotifyInterval(self.speedList[self.activeButtonIndex])
