@@ -35,11 +35,17 @@ class MainWindow(QMainWindow):
         self.videoTimelineVBL.addWidget(self.timelineSA)
         self.centreHBL.addLayout(self.videoTimelineVBL, stretch = 2)
 
+        self.containerLayout = QVBoxLayout()
         self.workSA = QScrollArea()
         self.workSA.setWidgetResizable(True)
         self.workPanel = WorkPanel()
         self.workSA.setWidget(self.workPanel)
-        self.centreHBL.addWidget(self.workSA, stretch = 1)
+        self.containerLayout.addWidget(self.workSA)
+        self.centreHBL.addLayout(self.containerLayout, stretch = 1)
+
+        self.addSubtitleBTN = QPushButton("Add Subtitle")
+        self.addSubtitleBTN.clicked.connect(self.workPanel.addSubtitle)
+        self.containerLayout.addWidget(self.addSubtitleBTN)
 
         qApp.installEventFilter(self)
 

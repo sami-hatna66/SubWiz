@@ -21,14 +21,14 @@ class VideoWidget(QVideoWidget):
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
 
         self.timeline = timeline
-        self.timeline.playheadChanged.connect(self.playheadChanged)
+        self.timeline.playheadChangedSignal.connect(self.playheadChangedSlot)
         self.mediaPlayer.positionChanged.connect(self.timeline.update)
 
         self.setAcceptDrops(True)
 
         self.show()
 
-    def playheadChanged(self, position, scale):
+    def playheadChangedSlot(self, position, scale):
         self.mediaPlayer.setPosition(int(position * 1000 / scale))
 
     def getDuration(self):

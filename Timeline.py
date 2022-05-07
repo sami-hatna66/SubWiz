@@ -11,7 +11,7 @@ class Timeline(QWidget):
     clicking = False
     playheadPos = 0
 
-    playheadChanged = pyqtSignal(int, float)
+    playheadChangedSignal = pyqtSignal(int, float)
 
     def __init__(self):
         super(Timeline, self).__init__()
@@ -56,14 +56,14 @@ class Timeline(QWidget):
     def mousePressEvent(self, QMouseEvent):
         self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
         self.update()
-        self.playheadChanged.emit(self.playheadPos, self.scale)
+        self.playheadChangedSignal.emit(self.playheadPos, self.scale)
         self.clicking = True
 
     def mouseMoveEvent(self, QMouseEvent):
         if self.clicking:
             self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
             self.update()
-            self.playheadChanged.emit(self.playheadPos, self.scale)
+            self.playheadChangedSignal.emit(self.playheadPos, self.scale)
 
     def mouseReleaseEvent(self, QMouseEvent):
         self.clicking = False

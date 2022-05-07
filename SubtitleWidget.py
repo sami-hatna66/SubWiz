@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 class SubtitleWidget(QWidget):
+    deleteSignal = pyqtSignal(QObject)
+
     def __init__(self, number):
         super(SubtitleWidget, self).__init__()
 
@@ -40,6 +42,7 @@ class SubtitleWidget(QWidget):
         self.layout.addWidget(self.subtitleBodyTB)
 
         self.deleteBTN = QPushButton("Delete")
+        self.deleteBTN.clicked.connect(lambda: self.deleteSignal.emit(self))
         self.layout.addWidget(self.deleteBTN)
 
         self.setFixedHeight(250)
