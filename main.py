@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from VideoWidget import VideoWidget
 from Timeline import Timeline
-from ControlBar import ControlBar
+from TopControl import TopControl
+from BottomControl import BottomControl
 from WorkPanel import WorkPanel
 import sys
 
@@ -25,18 +26,24 @@ class MainWindow(QMainWindow):
         self.video.initVideo()
         #---------------------------------------------------------------------------------------------------------------
         self.videoTimelineVBL.addWidget(self.video)
-        self.control = ControlBar(self.video, self.timeline)
-        self.videoTimelineVBL.addWidget(self.control)
+        self.topControl = TopControl(self.video, self.timeline)
+        self.videoTimelineVBL.addWidget(self.topControl)
         self.timelineSA = QScrollArea()
         self.timelineSA.setFocusPolicy(Qt.NoFocus)
         self.timelineSA.setWidgetResizable(True)
         self.timelineSA.setFixedHeight(210)
         self.timelineSA.setWidget(self.timeline)
         self.videoTimelineVBL.addWidget(self.timelineSA)
+
+        self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline)
+        self.videoTimelineVBL.addWidget(self.bottomControl)
         self.centreHBL.addLayout(self.videoTimelineVBL, stretch = 2)
+
+        self.videoTimelineVBL.setSpacing(1)
 
         self.containerLayout = QVBoxLayout()
         self.workSA = QScrollArea()
+        self.workSA.setFocusPolicy(Qt.NoFocus)
         self.workSA.setWidgetResizable(True)
         self.workPanel = WorkPanel()
         self.workSA.setWidget(self.workPanel)
@@ -54,12 +61,18 @@ class MainWindow(QMainWindow):
     def eventFilter(self, source, event):
         if event.type() == QEvent.KeyPress and self.video.path is not None and source is self:
             if event.key() == Qt.Key_Space:
-                self.control.playPauseAction()
+                self.topControl.playPauseAction()
             elif event.key() == Qt.Key_Right:
-                self.control.forward(1)
+                self.topControl.forward(1)
             elif event.key() == Qt.Key_Left:
-                self.control.back(1)
+                self.topControl.back(1)
         return False
+
+    def mousePressEvent(self, QMouseEvent):
+        focusedWidget = QApplication.focusWidget()
+        if isinstance(focusedWidget, QLineEdit) or isinstance(focusedWidget, QTextEdit):
+            focusedWidget.clearFocus()
+        QMainWindow.mousePressEvent(self, QMouseEvent)
 
 
 if __name__ == "__main__":

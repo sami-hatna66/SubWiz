@@ -5,7 +5,7 @@ from SubtitleWidget import SubtitleWidget
 
 class WorkPanel(QWidget):
     subtitleWidgetList = []
-    index = 1
+    activeWidgetIndex = None
 
     def __init__(self):
         super(WorkPanel, self).__init__()
@@ -14,23 +14,46 @@ class WorkPanel(QWidget):
         self.layout.setAlignment(Qt.AlignTop)
         self.setLayout(self.layout)
 
-        self.index = 1
         self.subtitleWidgetList = []
 
         self.show()
 
     def addSubtitle(self):
-        newWidget = SubtitleWidget(self.index)
+        newWidget = SubtitleWidget(len(self.subtitleWidgetList) + 1)
         newWidget.deleteSignal.connect(self.deleteSlot)
+        newWidget.clickSignal.connect(self.clickSlot)
         self.layout.addWidget(newWidget)
         self.subtitleWidgetList.append(newWidget)
-        self.index += 1
 
     def deleteSlot(self, sender):
+        if self.activeWidgetIndex == None:
+            cache = None
+        else:
+            cache = self.subtitleWidgetList[self.activeWidgetIndex]
+
+        if self.subtitleWidgetList.index(sender) == self.activeWidgetIndex:
+            self.activeWidgetIndex = None
+
         sender.setParent(None)
         self.subtitleWidgetList.remove(sender)
 
-        self.index = 1
-        for widget in self.subtitleWidgetList:
-            widget.numberLBL.setText(str(self.index))
-            self.index += 1
+        for i in range(0, len(self.subtitleWidgetList)):
+            self.subtitleWidgetList[i].numberLBL.setText(str(i + 1))
+            if cache == self.subtitleWidgetList[i]:
+                self.activeWidgetIndex = i
+
+        if len(self.subtitleWidgetList) == 0:
+            self.activeWidgetIndex = None
+
+    def clickSlot(self, sender):
+        if self.activeWidgetIndex is not None:
+            if self.subtitleWidgetList[self.activeWidgetIndex] == sender:
+                self.subtitleWidgetList[self.activeWidgetIndex].makeInactive()
+                self.activeWidgetIndex = None
+            else:
+                self.subtitleWidgetList[self.activeWidgetIndex].makeInactive()
+                self.activeWidgetIndex = self.subtitleWidgetList.index(sender)
+                self.subtitleWidgetList[self.activeWidgetIndex].makeActive()
+        else:
+            self.activeWidgetIndex = self.subtitleWidgetList.index(sender)
+            self.subtitleWidgetList[self.activeWidgetIndex].makeActive()

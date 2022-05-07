@@ -106,7 +106,7 @@ class Timeline(QWidget):
         playheadPath.lineTo(self.playheadPos - 5, 0)
         playheadPath.lineTo(self.playheadPos + 5, 0)
         playheadPath.lineTo(self.playheadPos, 10)
-        playheadPath.lineTo(self.playheadPos, 200)
+        playheadPath.lineTo(self.playheadPos, 210)
         painter.drawPath(playheadPath)
 
         painter.end()

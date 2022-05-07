@@ -4,10 +4,10 @@ from PyQt5.QtCore import *
 
 class SubtitleWidget(QWidget):
     deleteSignal = pyqtSignal(QObject)
+    clickSignal = pyqtSignal(QObject)
 
     def __init__(self, number):
         super(SubtitleWidget, self).__init__()
-
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
@@ -48,6 +48,15 @@ class SubtitleWidget(QWidget):
         self.setFixedHeight(250)
 
         self.show()
+
+    def makeActive(self):
+        self.activeLBL.show()
+
+    def makeInactive(self):
+        self.activeLBL.hide()
+
+    def mousePressEvent(self, QMouseEvent):
+        self.clickSignal.emit(self)
 
 
 
