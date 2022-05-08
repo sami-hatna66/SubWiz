@@ -6,6 +6,7 @@ from Timeline import Timeline
 from TopControl import TopControl
 from BottomControl import BottomControl
 from WorkPanel import WorkPanel
+from WaveformWidget import WaveformWidget
 import sys
 
 class MainWindow(QMainWindow):
@@ -53,6 +54,15 @@ class MainWindow(QMainWindow):
         self.addSubtitleBTN = QPushButton("Add Subtitle")
         self.addSubtitleBTN.clicked.connect(self.workPanel.addSubtitle)
         self.containerLayout.addWidget(self.addSubtitleBTN)
+
+        self.waveformSA = QScrollArea()
+        self.waveformSA.setFocusPolicy(Qt.NoFocus)
+        self.waveformSA.setWidgetResizable(True)
+        self.waveformSA.setFixedHeight(220)
+        self.waveformSA.verticalScrollBar().setStyleSheet("height: 0px;")
+        self.waveformWidget = WaveformWidget(self.video.path)
+        self.waveformSA.setWidget(self.waveformWidget)
+        self.containerLayout.addWidget(self.waveformSA)
 
         qApp.installEventFilter(self)
 
