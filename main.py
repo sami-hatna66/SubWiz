@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
 
         self.timeline = Timeline()
         self.video = VideoWidget(self.timeline)
+        self.workPanel = WorkPanel()
 
         self.videoTimelineVBL = QVBoxLayout()
         #---------------------------------------------------------------------------------------------------------------
@@ -35,7 +36,7 @@ class MainWindow(QMainWindow):
         self.timelineSA.setWidget(self.timeline)
         self.videoTimelineVBL.addWidget(self.timelineSA)
 
-        self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline)
+        self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline, self.workPanel)
         self.videoTimelineVBL.addWidget(self.bottomControl)
         self.centreHBL.addLayout(self.videoTimelineVBL, stretch = 2)
 
@@ -45,7 +46,6 @@ class MainWindow(QMainWindow):
         self.workSA = QScrollArea()
         self.workSA.setFocusPolicy(Qt.NoFocus)
         self.workSA.setWidgetResizable(True)
-        self.workPanel = WorkPanel()
         self.workSA.setWidget(self.workPanel)
         self.containerLayout.addWidget(self.workSA)
         self.centreHBL.addLayout(self.containerLayout, stretch = 1)
