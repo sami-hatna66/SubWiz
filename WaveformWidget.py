@@ -7,13 +7,18 @@ from moviepy.editor import VideoFileClip, concatenate
 class WaveformWidget(QWidget):
     canDraw = False
     data = []
+    playheadPos = 0
+    video = None
 
-    def __init__(self, path):
+    def __init__(self, video):
         super(WaveformWidget, self).__init__()
 
         self.setFixedSize(200, 220)
 
-        self.worker = audioDataWorker(path)
+        self.video = video
+        self.video.mediaPlayer.positionChanged.connect(self.setPlayheadPos)
+
+        self.worker = AudioDataWorker(self.video.path)
         self.worker.completeSignal.connect(self.setAudioData)
         self.worker.start()
 
@@ -22,6 +27,11 @@ class WaveformWidget(QWidget):
         if len(self.data) > 0:
             self.canDraw = True
             self.update()
+
+    def setPlayheadPos(self, newPos):
+        if len(self.data) > 0:
+            self.playheadPos = newPos / 1000
+            self.repaint()
 
     def paintEvent(self, QPaintEvent):
         painter = QPainter()
@@ -36,15 +46,17 @@ class WaveformWidget(QWidget):
                 lineStart = 110 - ((self.data[i] * (200 / maxVal)) / 2)
                 lineEnd = 110 + ((self.data[i] * (200 / maxVal)) / 2)
                 painter.drawLine(i, lineStart, i, lineEnd)
+            painter.setPen(QPen(Qt.red))
+            painter.drawLine(self.playheadPos, 0, self.playheadPos, 220)
 
         painter.end()
 
-class audioDataWorker(QThread):
+class AudioDataWorker(QThread):
     completeSignal = pyqtSignal(list)
     path = None
 
     def __init__(self, path):
-        super(audioDataWorker, self).__init__()
+        super(AudioDataWorker, self).__init__()
         self.path = path
 
     def run(self):

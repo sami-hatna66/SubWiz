@@ -7,14 +7,16 @@ class BottomControl(QWidget):
     timeline = None
     video = None
     workPanel = None
+    waveformSA = None
 
-    def __init__(self, video, timelineSA, timeline, workPanel):
+    def __init__(self, video, timelineSA, timeline, workPanel, waveformSA):
         super(BottomControl, self).__init__()
 
         self.timelineSA = timelineSA
         self.timeline = timeline
         self.video = video
         self.workPanel = workPanel
+        self.waveformSA = waveformSA
 
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
@@ -36,6 +38,9 @@ class BottomControl(QWidget):
     def goToPlayhead(self):
         self.timelineSA.horizontalScrollBar().setValue(int(
             self.timeline.playheadPos - (self.timelineSA.visibleRegion().boundingRect().width() / 2)
+        ))
+        self.waveformSA.horizontalScrollBar().setValue(int(
+            (self.video.mediaPlayer.position() / 1000) - (self.waveformSA.visibleRegion().boundingRect().width() / 2)
         ))
 
     def msecToTimeStamp(self, time):

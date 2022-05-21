@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
         self.timeline = Timeline()
         self.video = VideoWidget(self.timeline)
         self.workPanel = WorkPanel()
+        self.waveformSA = QScrollArea()
 
         self.videoTimelineVBL = QVBoxLayout()
         #---------------------------------------------------------------------------------------------------------------
@@ -37,7 +38,7 @@ class MainWindow(QMainWindow):
         self.timelineSA.setWidget(self.timeline)
         self.videoTimelineVBL.addWidget(self.timelineSA)
 
-        self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline, self.workPanel)
+        self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline, self.workPanel, self.waveformSA)
         self.videoTimelineVBL.addWidget(self.bottomControl)
         self.centreHBL.addLayout(self.videoTimelineVBL, stretch = 2)
 
@@ -55,12 +56,11 @@ class MainWindow(QMainWindow):
         self.addSubtitleBTN.clicked.connect(self.workPanel.addSubtitle)
         self.containerLayout.addWidget(self.addSubtitleBTN)
 
-        self.waveformSA = QScrollArea()
         self.waveformSA.setFocusPolicy(Qt.NoFocus)
         self.waveformSA.setWidgetResizable(True)
         self.waveformSA.setFixedHeight(220)
         self.waveformSA.verticalScrollBar().setStyleSheet("height: 0px;")
-        self.waveformWidget = WaveformWidget(self.video.path)
+        self.waveformWidget = WaveformWidget(self.video)
         self.waveformSA.setWidget(self.waveformWidget)
         self.containerLayout.addWidget(self.waveformSA)
 
