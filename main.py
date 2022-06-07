@@ -65,10 +65,25 @@ class MainWindow(QMainWindow):
         self.video.mediaLoadedSignal.connect(self.waveformWidget.startWorker)
         self.waveformSA.setWidget(self.waveformWidget)
         self.containerLayout.addWidget(self.waveformSA)
+        self.waveformSA.hide()
+
+        self.mainMenu = QMenuBar(self)
+        self.viewMenu = self.mainMenu.addMenu(" &View")
+        self.showWaveformAction = QAction("Show Audio Waveform", self)
+        self.showWaveformAction.triggered.connect(self.toggleWaveformVisibility)
+        self.viewMenu.addAction(self.showWaveformAction)
 
         qApp.installEventFilter(self)
 
         self.showMaximized()
+
+    def toggleWaveformVisibility(self):
+        if self.waveformSA.isVisible():
+            self.waveformSA.hide()
+            self.showWaveformAction.setText("Show Audio Waveform")
+        else:
+            self.waveformSA.show()
+            self.showWaveformAction.setText("Hide Audio Waveform")
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.KeyPress and self.video.path is not None and source is self:
