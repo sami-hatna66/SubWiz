@@ -25,8 +25,8 @@ class MainWindow(QMainWindow):
 
         self.videoTimelineVBL = QVBoxLayout()
         #---------------------------------------------------------------------------------------------------------------
-        self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
-        self.video.initVideo()
+        #self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
+        #self.video.initVideo()
         #---------------------------------------------------------------------------------------------------------------
         self.videoTimelineVBL.addWidget(self.video)
         self.topControl = TopControl(self.video, self.timeline)
@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
         self.timelineSA.setWidgetResizable(True)
         self.timelineSA.setFixedHeight(210)
         self.timelineSA.setWidget(self.timeline)
+        self.timelineSA.horizontalScrollBar().valueChanged.connect(self.timeline.update)
         self.videoTimelineVBL.addWidget(self.timelineSA)
 
         self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline, self.workPanel, self.waveformSA)
@@ -61,6 +62,7 @@ class MainWindow(QMainWindow):
         self.waveformSA.setFixedHeight(220)
         self.waveformSA.verticalScrollBar().setStyleSheet("height: 0px;")
         self.waveformWidget = WaveformWidget(self.video)
+        self.video.mediaLoadedSignal.connect(self.waveformWidget.startWorker)
         self.waveformSA.setWidget(self.waveformWidget)
         self.containerLayout.addWidget(self.waveformSA)
 

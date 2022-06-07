@@ -12,6 +12,8 @@ class VideoWidget(QVideoWidget):
     placeholderLBL = None
     timeline = None
 
+    mediaLoadedSignal = pyqtSignal(str)
+
     def __init__(self, timeline, path = None):
         super(VideoWidget, self).__init__()
         self.path = path
@@ -53,6 +55,7 @@ class VideoWidget(QVideoWidget):
         self.timeline.setFixedWidth(self.timeline.duration * self.timeline.scale)
         self.mediaPlayer.positionChanged.connect(self.timeline.setPlayheadPos)
         self.timeline.update()
+        self.mediaLoadedSignal.emit(self.path)
 
     def mousePressEvent(self, QMouseEvent):
         if self.path is None:

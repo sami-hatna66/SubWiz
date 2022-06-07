@@ -20,6 +20,9 @@ class WaveformWidget(QWidget):
 
         self.worker = AudioDataWorker(self.video.path)
         self.worker.completeSignal.connect(self.setAudioData)
+
+    def startWorker(self, newPath):
+        self.worker.path = newPath
         self.worker.start()
 
     def setAudioData(self, newData):
