@@ -18,17 +18,18 @@ class MainWindow(QMainWindow):
         self.centreHBL = QHBoxLayout()
         self.centre.setLayout(self.centreHBL)
 
+        self.vidContainer = QWidget()
+        self.vidLayout = QVBoxLayout()
+        self.vidLayout.setContentsMargins(0, 0, 0, 0)
+        self.vidContainer.setLayout(self.vidLayout)
+
         self.timeline = Timeline()
         self.video = VideoWidget(self.timeline)
-        self.workPanel = WorkPanel()
         self.waveformSA = QScrollArea()
 
         self.videoTimelineVBL = QVBoxLayout()
-        #---------------------------------------------------------------------------------------------------------------
-        #self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
-        #self.video.initVideo()
-        #---------------------------------------------------------------------------------------------------------------
-        self.videoTimelineVBL.addWidget(self.video)
+        self.videoTimelineVBL.addWidget(self.vidContainer)
+        self.vidLayout.addWidget(self.video)
         self.topControl = TopControl(self.video, self.timeline)
         self.videoTimelineVBL.addWidget(self.topControl)
         self.timelineSA = QScrollArea()
@@ -38,6 +39,13 @@ class MainWindow(QMainWindow):
         self.timelineSA.setWidget(self.timeline)
         self.timelineSA.horizontalScrollBar().valueChanged.connect(self.timeline.update)
         self.videoTimelineVBL.addWidget(self.timelineSA)
+
+        self.subtitle = QLabel("", self.vidContainer)
+        self.subtitle.hide()
+        self.subtitle.setStyleSheet("color: white; background-color: black")
+        self.subtitle.setAlignment(Qt.AlignCenter)
+
+        self.workPanel = WorkPanel(self.subtitle, self.video)
 
         self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline, self.workPanel, self.waveformSA)
         self.videoTimelineVBL.addWidget(self.bottomControl)
@@ -73,9 +81,19 @@ class MainWindow(QMainWindow):
         self.showWaveformAction.triggered.connect(self.toggleWaveformVisibility)
         self.viewMenu.addAction(self.showWaveformAction)
 
+        self.video.mediaPlayer.positionChanged.connect(self.workPanel.subSearch)
+
         qApp.installEventFilter(self)
 
         self.showMaximized()
+
+        self.subtitle.move(self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
+                           self.vidContainer.height() - self.subtitle.height() - 5)
+
+        #---------------------------------------------------------------------------------------------------------------
+        self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
+        self.video.initVideo()
+        #---------------------------------------------------------------------------------------------------------------
 
     def toggleWaveformVisibility(self):
         if self.waveformSA.isVisible():
@@ -84,6 +102,10 @@ class MainWindow(QMainWindow):
         else:
             self.waveformSA.show()
             self.showWaveformAction.setText("Hide Audio Waveform")
+
+    def resizeEvent(self, QResizeEvent):
+        self.subtitle.move(self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
+                           self.vidContainer.height() - self.subtitle.height())
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.KeyPress and self.video.path is not None and source is self:

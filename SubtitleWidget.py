@@ -58,10 +58,13 @@ class SubtitleWidget(QWidget):
         pattern = re.compile("^(2[0-3]|[0-1]?[\d]):[0-5][\d]:[0-5][\d](([:.])\d{1,3})?$")
         if pattern.search(sender.text()):
             sender.setStyleSheet("background-color: #EBFFEB")
+            return True
         elif sender.text() == "":
             sender.setStyleSheet("background-color: white")
+            return False
         else:
             sender.setStyleSheet("background-color: #FA867E")
+            return False
 
     def eventFilter(self, source, event):
         if event.type() == event.FocusIn and (isinstance(source, QLineEdit) or isinstance(source, QTextEdit)):

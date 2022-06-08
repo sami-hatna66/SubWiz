@@ -2,13 +2,20 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from SubtitleWidget import SubtitleWidget
+import re
+from datetime import datetime
 
 class WorkPanel(QWidget):
     subtitleWidgetList = []
     activeWidgetIndex = None
+    subtitle = None
+    video = None
 
-    def __init__(self):
+    def __init__(self, subtitle, video):
         super(WorkPanel, self).__init__()
+
+        self.subtitle = subtitle
+        self.video = video
 
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignTop)
@@ -17,6 +24,35 @@ class WorkPanel(QWidget):
         self.subtitleWidgetList = []
 
         self.show()
+
+    def subSearch(self, pos): # milliseconds
+        changed = False
+        for sub in self.subtitleWidgetList:
+            testStart = sub.validateTimestamp(sub.startTB)
+            testEnd = sub.validateTimestamp(sub.endTB)
+            if testStart and testEnd:
+                start = sub.startTB.text()
+                end = sub.endTB.text()
+                if "." not in start:
+                    start += ".00"
+                if "." not in end:
+                    end += ".00"
+                start = (datetime.strptime(start, "%H:%M:%S.%f") -
+                         datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
+                end = (datetime.strptime(end, "%H:%M:%S.%f")-
+                         datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
+                if start <= pos / 1000 <= end:
+                    print("POG")
+                    self.subtitle.setText(sub.subtitleBodyTB.toPlainText())
+                    self.subtitle.adjustSize()
+                    self.subtitle.show()
+                    changed = True
+                    self.subtitle.move(self.video.width() / 2 - (self.subtitle.width() / 2),
+                                       self.video.height() - self.subtitle.height() - 5)
+                    break
+        if not changed:
+            self.subtitle.hide()
+
 
     def addSubtitle(self):
         newWidget = SubtitleWidget(len(self.subtitleWidgetList) + 1)
