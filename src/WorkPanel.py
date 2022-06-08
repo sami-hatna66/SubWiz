@@ -42,7 +42,6 @@ class WorkPanel(QWidget):
                 end = (datetime.strptime(end, "%H:%M:%S.%f")-
                          datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
                 if start <= pos / 1000 <= end:
-                    print("POG")
                     self.subtitle.setText(sub.subtitleBodyTB.toPlainText())
                     self.subtitle.adjustSize()
                     self.subtitle.show()
@@ -58,6 +57,7 @@ class WorkPanel(QWidget):
         newWidget = SubtitleWidget(len(self.subtitleWidgetList) + 1)
         newWidget.deleteSignal.connect(self.deleteSlot)
         newWidget.clickSignal.connect(self.clickSlot)
+        newWidget.subtitleBodyTB.textChanged.connect(lambda: self.subSearch(self.video.mediaPlayer.position()))
         self.layout.addWidget(newWidget)
         self.subtitleWidgetList.append(newWidget)
 
