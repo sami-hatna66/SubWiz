@@ -7,6 +7,8 @@ class SubtitleWidget(QWidget):
     deleteSignal = pyqtSignal(QObject)
     clickSignal = pyqtSignal(QObject)
 
+    formattingTypes = {"bold": ["<b>", "</b>"], "italic": ["<i>", "</i>"], "underline": ["<u>", "</u>"]}
+
     def __init__(self, number):
         super(SubtitleWidget, self).__init__()
         self.layout = QVBoxLayout()
@@ -34,10 +36,13 @@ class SubtitleWidget(QWidget):
 
         self.formattingHBL = QHBoxLayout()
         self.boldBTN = QPushButton("B")
+        self.boldBTN.clicked.connect(lambda: self.insertFormatting("bold"))
         self.formattingHBL.addWidget(self.boldBTN)
         self.italicBTN = QPushButton("I")
+        self.italicBTN.clicked.connect(lambda: self.insertFormatting("italic"))
         self.formattingHBL.addWidget(self.italicBTN)
         self.underlineBTN = QPushButton("U")
+        self.underlineBTN.clicked.connect(lambda: self.insertFormatting("underline"))
         self.formattingHBL.addWidget(self.underlineBTN)
         self.layout.addLayout(self.formattingHBL)
 
@@ -53,6 +58,15 @@ class SubtitleWidget(QWidget):
         #qApp.installEventFilter(self)
 
         self.show()
+
+    def insertFormatting(self, type):
+        cursor = self.subtitleBodyTB.textCursor()
+        if cursor.hasSelection():
+            cursor.insertText(self.formattingTypes[type][0] + cursor.selectedText() + self.formattingTypes[type][1])
+        else:
+            cursor.insertText(self.formattingTypes[type][0] + self.formattingTypes[type][1])
+            cursor.setPosition(cursor.position() - 4)
+            self.subtitleBodyTB.setTextCursor(cursor)
 
     def validateTimestamp(self, sender):
         pattern = re.compile("^(2[0-3]|[0-1]?[\d]):[0-5][\d]:[0-5][\d](([:.])\d{1,3})?$")

@@ -58,6 +58,7 @@ class WorkPanel(QWidget):
         newWidget.deleteSignal.connect(self.deleteSlot)
         newWidget.clickSignal.connect(self.clickSlot)
         newWidget.subtitleBodyTB.textChanged.connect(lambda: self.subSearch(self.video.mediaPlayer.position()))
+        newWidget.deleteBTN.clicked.connect(lambda: self.subSearch(self.video.mediaPlayer.position()))
         self.layout.addWidget(newWidget)
         self.subtitleWidgetList.append(newWidget)
 
