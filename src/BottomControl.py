@@ -23,10 +23,12 @@ class BottomControl(QWidget):
 
         self.markStartTimeBTN = QPushButton("Add Start Time")
         self.markStartTimeBTN.clicked.connect(self.markStartTime)
+        self.markStartTimeBTN.clicked.connect(self.timeline.update)
         self.layout.addWidget(self.markStartTimeBTN)
 
         self.markEndTimeBTN = QPushButton("Add End Time")
         self.markEndTimeBTN.clicked.connect(self.markEndTime)
+        self.markEndTimeBTN.clicked.connect(self.timeline.update)
         self.layout.addWidget(self.markEndTimeBTN)
 
         self.goToPlayheadBTN = QPushButton("Go To Playhead")

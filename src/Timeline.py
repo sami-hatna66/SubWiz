@@ -2,6 +2,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import math
+from datetime import datetime
 
 class Timeline(QWidget):
     duration = None
@@ -103,7 +104,21 @@ class Timeline(QWidget):
             painter.drawText(i * self.scale * 3600 - 15, 37, str(i).zfill(2) + "00:00")
 
         if self.subtitleList is not None:
-            print("In")
+            for sub in self.subtitleList:
+                test1 = sub.validateTimestamp(sub.startTB)
+                test2 = sub.validateTimestamp(sub.endTB)
+                if test1 and test2:
+                    start = sub.startTB.text()
+                    end = sub.endTB.text()
+                    if "." not in start:
+                        start += ".00"
+                    if "." not in end:
+                        end += ".00"
+                    start = (datetime.strptime(start, "%H:%M:%S.%f") -
+                             datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
+                    end = (datetime.strptime(end, "%H:%M:%S.%f") -
+                           datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
+                    painter.drawRect(start * self.scale, 60, (end - start) * self.scale, 20)
 
         painter.drawLine(0, 40, self.width(), 40)
 
