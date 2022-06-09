@@ -47,6 +47,8 @@ class MainWindow(QMainWindow):
 
         self.workPanel = WorkPanel(self.subtitle, self.video)
 
+        self.timeline.passInSubtitles(self.workPanel.subtitleWidgetList)
+
         self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline, self.workPanel, self.waveformSA)
         self.videoTimelineVBL.addWidget(self.bottomControl)
         self.centreHBL.addLayout(self.videoTimelineVBL, stretch = 2)

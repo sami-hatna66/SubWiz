@@ -11,6 +11,8 @@ class Timeline(QWidget):
     clicking = False
     playheadPos = 0
 
+    subtitleList = None
+
     playheadChangedSignal = pyqtSignal(int, float)
 
     def __init__(self):
@@ -21,6 +23,9 @@ class Timeline(QWidget):
         self.setStyleSheet("border: 0px;")
 
         self.show()
+
+    def passInSubtitles(self, subtitleList):
+        self.subtitleList = subtitleList
 
     def zoomIn(self):
         if self.scaleIndex < len(self.scaleList) - 1:
@@ -96,6 +101,9 @@ class Timeline(QWidget):
         for i in range(1, hours + 1):
             painter.drawLine(i * self.scale * 3600, 0, i * self.scale * 3600, 30)
             painter.drawText(i * self.scale * 3600 - 15, 37, str(i).zfill(2) + "00:00")
+
+        if self.subtitleList is not None:
+            print("In")
 
         painter.drawLine(0, 40, self.width(), 40)
 
