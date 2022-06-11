@@ -10,12 +10,14 @@ class WorkPanel(QWidget):
     activeWidgetIndex = None
     subtitle = None
     video = None
+    timeline = None
 
-    def __init__(self, subtitle, video):
+    def __init__(self, subtitle, video, timeline):
         super(WorkPanel, self).__init__()
 
         self.subtitle = subtitle
         self.video = video
+        self.timeline = timeline
 
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignTop)
@@ -81,6 +83,8 @@ class WorkPanel(QWidget):
 
         if len(self.subtitleWidgetList) == 0:
             self.activeWidgetIndex = None
+
+        self.timeline.update()
 
     def clickSlot(self, sender):
         if self.activeWidgetIndex is not None:

@@ -103,6 +103,13 @@ class Timeline(QWidget):
             painter.drawLine(i * self.scale * 3600, 0, i * self.scale * 3600, 30)
             painter.drawText(i * self.scale * 3600 - 15, 37, str(i).zfill(2) + "00:00")
 
+        maxTiers = (self.height() - 40) // 40
+        data = []
+        lanesData = []
+        stack = [[0,0] for x in range(maxTiers)]
+        colours = ["#FFFF00", "#0033CC", "#FF9900", "#00CC00", "#660099"]
+        colourIndex = 0
+
         if self.subtitleList is not None:
             for sub in self.subtitleList:
                 test1 = sub.validateTimestamp(sub.startTB)
@@ -118,8 +125,29 @@ class Timeline(QWidget):
                              datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
                     end = (datetime.strptime(end, "%H:%M:%S.%f") -
                            datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
-                    painter.drawRect(start * self.scale, 60, (end - start) * self.scale, 20)
+                    data.append([start, end])
 
+            for val in data:
+                predicate = lambda d: d[1] <= val[0] and d[0] < val[0]
+                try:
+                    lane = stack.index(next(filter(predicate, stack), None))
+                    yIndex = len(stack) if lane is None else lane
+                except:
+                    yIndex = 0
+                lanesData.append([val, yIndex])
+                stack[yIndex] = val
+
+            for block in lanesData:
+                start = block[0][0]
+                end = block[0][1]
+                lane = block[1]
+                painter.setPen(QPen(QColor(colours[colourIndex])))
+                painter.setBrush(QBrush(QColor(colours[colourIndex])))
+                painter.drawRect(start * self.scale, 60 + (lane * 30), (end - start) * self.scale, 20)
+                colourIndex = 0 if colourIndex >= len(colours) - 1 else colourIndex + 1
+
+
+        painter.setPen(QPen(Qt.black))
         painter.drawLine(0, 40, self.width(), 40)
 
         painter.setPen(Qt.red)

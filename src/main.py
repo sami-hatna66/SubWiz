@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
         self.subtitle.setStyleSheet("color: white; background-color: black")
         self.subtitle.setAlignment(Qt.AlignCenter)
 
-        self.workPanel = WorkPanel(self.subtitle, self.video)
+        self.workPanel = WorkPanel(self.subtitle, self.video, self.timeline)
 
         self.timeline.passInSubtitles(self.workPanel.subtitleWidgetList)
 
