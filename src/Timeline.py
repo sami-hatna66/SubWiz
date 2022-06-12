@@ -137,15 +137,19 @@ class Timeline(QWidget):
                 lanesData.append([val, yIndex])
                 stack[yIndex] = val
 
-            for block in lanesData:
-                start = block[0][0]
-                end = block[0][1]
-                lane = block[1]
+            for x in range(0, len(lanesData)):
+                start = lanesData[x][0][0]
+                end = lanesData[x][0][1]
+                lane = lanesData[x][1]
                 painter.setPen(QPen(QColor(colours[colourIndex])))
                 painter.setBrush(QBrush(QColor(colours[colourIndex])))
                 painter.drawRect(start * self.scale, 60 + (lane * 30), (end - start) * self.scale, 20)
                 colourIndex = 0 if colourIndex >= len(colours) - 1 else colourIndex + 1
-
+                painter.setPen(QPen(Qt.black))
+                font = QFont()
+                font.setPointSize(15)
+                painter.setFont(font)
+                painter.drawText(start * self.scale + 5, 75 + (lane * 30), str(x + 1))
 
         painter.setPen(QPen(Qt.black))
         painter.drawLine(0, 40, self.width(), 40)

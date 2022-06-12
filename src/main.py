@@ -7,6 +7,7 @@ from TopControl import TopControl
 from BottomControl import BottomControl
 from WorkPanel import WorkPanel
 from WaveformWidget import WaveformWidget
+from ExportWidget import ExportWidget
 import sys
 
 class MainWindow(QMainWindow):
@@ -78,6 +79,12 @@ class MainWindow(QMainWindow):
         self.waveformSA.hide()
 
         self.mainMenu = QMenuBar(self)
+
+        self.fileMenu = self.mainMenu.addMenu(" &File")
+        self.exportAction = QAction("Export SRT", self)
+        self.exportAction.triggered.connect(self.exportSRT)
+        self.fileMenu.addAction(self.exportAction)
+
         self.viewMenu = self.mainMenu.addMenu(" &View")
         self.showWaveformAction = QAction("Show Audio Waveform", self)
         self.showWaveformAction.triggered.connect(self.toggleWaveformVisibility)
@@ -96,6 +103,9 @@ class MainWindow(QMainWindow):
         self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
         self.video.initVideo()
         #---------------------------------------------------------------------------------------------------------------
+
+    def exportSRT(self):
+        self.exportWidget = ExportWidget(self.workPanel.subtitleWidgetList)
 
     def toggleWaveformVisibility(self):
         if self.waveformSA.isVisible():
