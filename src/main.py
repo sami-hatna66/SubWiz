@@ -1,3 +1,4 @@
+import os.path
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -8,6 +9,7 @@ from BottomControl import BottomControl
 from WorkPanel import WorkPanel
 from WaveformWidget import WaveformWidget
 from ExportWidget import ExportWidget
+from ImportWidget import ImportWidget
 import sys
 
 class MainWindow(QMainWindow):
@@ -64,6 +66,11 @@ class MainWindow(QMainWindow):
         self.containerLayout.addWidget(self.workSA)
         self.centreHBL.addLayout(self.containerLayout, stretch = 1)
 
+        self.importPanel = ImportWidget(self.workPanel)
+        self.importPanel.finishedImportSignal.connect(self.finishedImportSlot)
+        self.containerLayout.addWidget(self.importPanel)
+        self.importPanel.hide()
+
         self.addSubtitleBTN = QPushButton("Add Subtitle")
         self.addSubtitleBTN.clicked.connect(self.workPanel.addSubtitle)
         self.containerLayout.addWidget(self.addSubtitleBTN)
@@ -81,11 +88,17 @@ class MainWindow(QMainWindow):
         self.mainMenu = QMenuBar(self)
 
         self.fileMenu = self.mainMenu.addMenu(" &File")
+
+        self.importSRTAction = QAction("Import SRT File", self)
+        self.importSRTAction.triggered.connect(self.importSRT)
+        self.fileMenu.addAction(self.importSRTAction)
+
         self.exportAction = QAction("Export SRT", self)
         self.exportAction.triggered.connect(self.exportSRT)
         self.fileMenu.addAction(self.exportAction)
 
         self.viewMenu = self.mainMenu.addMenu(" &View")
+
         self.showWaveformAction = QAction("Show Audio Waveform", self)
         self.showWaveformAction.triggered.connect(self.toggleWaveformVisibility)
         self.viewMenu.addAction(self.showWaveformAction)
@@ -103,6 +116,20 @@ class MainWindow(QMainWindow):
         self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
         self.video.initVideo()
         #---------------------------------------------------------------------------------------------------------------
+
+    def importSRT(self):
+        srtFilename, _ = QFileDialog.getOpenFileName(self, "Open SRT File", os.path.abspath(os.sep), "(*.srt)")
+        if srtFilename != "":
+            self.workSA.hide()
+            self.addSubtitleBTN.hide()
+            self.importPanel.show()
+
+            self.importPanel.importFile(srtFilename)
+
+    def finishedImportSlot(self):
+        self.importPanel.hide()
+        self.workSA.show()
+        self.addSubtitleBTN.show()
 
     def exportSRT(self):
         self.exportWidget = ExportWidget(self.workPanel.subtitleWidgetList)

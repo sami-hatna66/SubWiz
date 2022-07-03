@@ -40,8 +40,9 @@ class ExportWidget(QWidget):
 
     def selectPath(self):
         filename = QFileDialog.getExistingDirectory(self, "Select Export Directory", os.path.abspath(os.sep))
-        self.locationBTN.setText(filename)
-        self.exportPath = filename
+        if filename != "":
+            self.locationBTN.setText(filename)
+            self.exportPath = filename
 
     def export(self):
         if self.nameTB.text() == "":

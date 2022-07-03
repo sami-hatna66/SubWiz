@@ -4,6 +4,7 @@ from PyQt5.QtCore import *
 from SubtitleWidget import SubtitleWidget
 import re
 from datetime import datetime
+import time
 
 class WorkPanel(QWidget):
     subtitleWidgetList = []
@@ -54,12 +55,13 @@ class WorkPanel(QWidget):
         if not changed:
             self.subtitle.hide()
 
-
     def addSubtitle(self):
         newWidget = SubtitleWidget(len(self.subtitleWidgetList) + 1)
         newWidget.deleteSignal.connect(self.deleteSlot)
         newWidget.clickSignal.connect(self.clickSlot)
         newWidget.subtitleBodyTB.textChanged.connect(lambda: self.subSearch(self.video.mediaPlayer.position()))
+        newWidget.startTB.textChanged.connect(self.timeline.update)
+        newWidget.endTB.textChanged.connect(self.timeline.update)
         newWidget.deleteBTN.clicked.connect(lambda: self.subSearch(self.video.mediaPlayer.position()))
         self.layout.addWidget(newWidget)
         self.subtitleWidgetList.append(newWidget)
