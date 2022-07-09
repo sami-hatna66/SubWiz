@@ -72,7 +72,7 @@ class MainWindow(QMainWindow):
         self.importPanel.hide()
 
         self.addSubtitleBTN = QPushButton("Add Subtitle")
-        self.addSubtitleBTN.clicked.connect(self.workPanel.addSubtitle)
+        self.addSubtitleBTN.clicked.connect(lambda: self.workPanel.addSubtitle("", "", ""))
         self.containerLayout.addWidget(self.addSubtitleBTN)
 
         self.waveformSA.setFocusPolicy(Qt.NoFocus)

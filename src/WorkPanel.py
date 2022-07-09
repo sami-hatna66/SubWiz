@@ -55,8 +55,8 @@ class WorkPanel(QWidget):
         if not changed:
             self.subtitle.hide()
 
-    def addSubtitle(self):
-        newWidget = SubtitleWidget(len(self.subtitleWidgetList) + 1)
+    def addSubtitle(self, start, end, body):
+        newWidget = SubtitleWidget(len(self.subtitleWidgetList) + 1, start, end, body)
         newWidget.deleteSignal.connect(self.deleteSlot)
         newWidget.clickSignal.connect(self.clickSlot)
         newWidget.subtitleBodyTB.textChanged.connect(lambda: self.subSearch(self.video.mediaPlayer.position()))

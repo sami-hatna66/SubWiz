@@ -27,16 +27,33 @@ class ImportWidget(QWidget):
         self.show()
 
     def importFile(self, path):
+        self.progressBar.setValue(0)
+        self.progressBar.setMaximum(sum(1 for line in open(path)))
+        self.importWorker = ImportSRTThread(path)
+        self.importWorker.addWidgetSignal.connect(self.workPanel.addSubtitle)
+        self.importWorker.incrementProgressBarSignal.connect(self.incrementProgressBarSlot, Qt.BlockingQueuedConnection)
+        self.importWorker.finishedImportSignal.connect(self.finishedImportSignal.emit)
+        self.importWorker.start()
+
+    def incrementProgressBarSlot(self):
+        self.progressBar.setValue(self.progressBar.value() + 1)
+
+class ImportSRTThread(QThread):
+    path = None
+
+    addWidgetSignal = pyqtSignal(str, str, str)
+    incrementProgressBarSignal = pyqtSignal()
+    finishedImportSignal = pyqtSignal()
+
+    def __init__(self, path):
+        super(ImportSRTThread, self).__init__()
         self.path = path
 
-        fileLength = sum(1 for line in open(self.path))
-        self.progressBar.setMaximum(2 * fileLength)
-
-        fileData = []
+    def run(self):
         item = {}
 
         with open(self.path) as srtFile:
-            prevLine = "text"
+            prevLine = "number"
             timestampPattern = re.compile("([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])([:,])\d{1,3} --> ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])([:,])\d{1,3}")
 
             for line in srtFile:
@@ -51,32 +68,31 @@ class ImportWidget(QWidget):
                     if "body" in item:
                         item["body"] += line
                     else:
-                        item["body"] =  line
+                        item["body"] = line
 
                 elif line == "\n":
                     prevLine = "number"
-                    fileData.append(item)
+
+                    self.addWidgetSignal.emit(item["start"], item["end"], item["body"])
+                    self.incrementProgressBarSignal.emit()
+
                     item = {}
 
-                self.progressBar.setValue(self.progressBar.value() + 1)
-                qApp.processEvents(QEventLoop.AllEvents, 50)
+                time.sleep(0.01)
 
-        for item in fileData:
-            self.workPanel.addSubtitle()
-            self.workPanel.subtitleWidgetList[-1].startTB.setText(item["start"])
-            self.workPanel.subtitleWidgetList[-1].endTB.setText(item["end"])
-            self.workPanel.subtitleWidgetList[-1].subtitleBodyTB.setText(item["body"])
+            self.finishedImportSignal.emit()
+            self.quit()
 
-            self.progressBar.setValue(self.progressBar.value() + 1)
-            qApp.processEvents(QEventLoop.AllEvents, 50)
 
-        print(fileData)
 
-        self.finishedImportSignal.emit()
 
-        # for x in range(0, 100):
-        #     time.sleep(0.1)
-        #     self.progressBar.setValue(self.progressBar.value() + 1)
-        #     if not x % 20:
-        #         qApp.processEvents(QEventLoop.AllEvents, 50)
+
+
+
+
+
+
+
+
+
 

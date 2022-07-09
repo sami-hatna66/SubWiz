@@ -9,7 +9,7 @@ class SubtitleWidget(QWidget):
 
     formattingTypes = {"bold": ["<b>", "</b>"], "italic": ["<i>", "</i>"], "underline": ["<u>", "</u>"]}
 
-    def __init__(self, number):
+    def __init__(self, number, start, end, body):
         super(SubtitleWidget, self).__init__()
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -25,12 +25,12 @@ class SubtitleWidget(QWidget):
         self.layout.addLayout(self.timeHBL)
 
         self.timeHBL.addWidget(QLabel("Start:"))
-        self.startTB = QLineEdit()
+        self.startTB = QLineEdit(start)
         self.startTB.textChanged.connect(lambda: self.validateTimestamp(self.startTB))
         self.timeHBL.addWidget(self.startTB)
 
         self.timeHBL.addWidget(QLabel("End:"))
-        self.endTB = QLineEdit()
+        self.endTB = QLineEdit(end)
         self.endTB.textChanged.connect(lambda: self.validateTimestamp(self.endTB))
         self.timeHBL.addWidget(self.endTB)
 
@@ -47,6 +47,8 @@ class SubtitleWidget(QWidget):
         self.layout.addLayout(self.formattingHBL)
 
         self.subtitleBodyTB = QTextEdit()
+        self.subtitleBodyTB.setAcceptRichText(True)
+        self.subtitleBodyTB.setText(body)
         self.layout.addWidget(self.subtitleBodyTB)
 
         self.deleteBTN = QPushButton("Delete")
