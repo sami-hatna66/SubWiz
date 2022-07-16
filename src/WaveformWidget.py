@@ -1,7 +1,7 @@
 import numpy as np
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
 from moviepy.editor import VideoFileClip, concatenate
 
 class WaveformWidget(QWidget):
@@ -49,7 +49,7 @@ class WaveformWidget(QWidget):
                 lineStart = 110 - ((self.data[i] * (200 / maxVal)) / 2)
                 lineEnd = 110 + ((self.data[i] * (200 / maxVal)) / 2)
                 painter.drawLine(i, lineStart, i, lineEnd)
-            painter.setPen(QPen(Qt.red))
+            painter.setPen(QPen(Qt.GlobalColor.red))
             painter.drawLine(self.playheadPos, 0, self.playheadPos, 220)
 
         painter.end()

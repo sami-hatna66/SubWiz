@@ -1,6 +1,6 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
 
 class BottomControl(QWidget):
     timelineSA = None
@@ -45,7 +45,8 @@ class BottomControl(QWidget):
             (self.video.mediaPlayer.position() / 1000) - (self.waveformSA.visibleRegion().boundingRect().width() / 2)
         ))
 
-    def msecToTimeStamp(self, time):
+    @staticmethod
+    def msecToTimeStamp(time):
         hrs = time // 3600000
         time = time - (3600000 * hrs)
         mins = time // 60000
@@ -56,13 +57,15 @@ class BottomControl(QWidget):
         return result
 
     def markStartTime(self):
-        if self.workPanel.activeWidgetIndex is not None:
-            self.workPanel.subtitleWidgetList[self.workPanel.activeWidgetIndex].startTB.setText(
-                str(self.msecToTimeStamp(self.video.mediaPlayer.position()))
-            )
+        for index in self.workPanel.subtitleTable.selectionModel().selectedRows():
+            self.workPanel.subtitleList[index.row()][0] = str(self.msecToTimeStamp(self.video.mediaPlayer.position()))
+            self.workPanel.subtitleModel.setData(self.workPanel.subtitleList, Qt.ItemDataRole.DisplayRole)
+            self.workPanel.subtitleTable.clearSelection()
+            self.workPanel.subtitleTable.selectRow(index.row())
 
     def markEndTime(self):
-        if self.workPanel.activeWidgetIndex is not None:
-            self.workPanel.subtitleWidgetList[self.workPanel.activeWidgetIndex].endTB.setText(
-                str(self.msecToTimeStamp(self.video.mediaPlayer.position()))
-            )
+        for index in self.workPanel.subtitleTable.selectionModel().selectedRows():
+            self.workPanel.subtitleList[index.row()][1] = str(self.msecToTimeStamp(self.video.mediaPlayer.position()))
+            self.workPanel.subtitleModel.setData(self.workPanel.subtitleList, Qt.ItemDataRole.DisplayRole)
+            self.workPanel.subtitleTable.clearSelection()
+            self.workPanel.subtitleTable.selectRow(index.row())

@@ -1,8 +1,8 @@
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
-from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt6.QtMultimedia import QMediaPlayer
+from PyQt6.QtMultimediaWidgets import QVideoWidget
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
 import os
 import cv2
 
@@ -20,7 +20,7 @@ class VideoWidget(QVideoWidget):
 
         self.placeholderLBL = QLabel("Drag file or click", self)
 
-        self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        self.mediaPlayer = QMediaPlayer(None)
 
         self.timeline = timeline
         self.timeline.playheadChangedSignal.connect(self.playheadChangedSlot)
@@ -49,7 +49,7 @@ class VideoWidget(QVideoWidget):
     def initVideo(self):
         self.placeholderLBL.setParent(None)
         self.mediaPlayer.setVideoOutput(self)
-        self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.path)))
+        self.mediaPlayer.setSource(QUrl.fromLocalFile(self.path))
         self.mediaPlayer.play()
         self.timeline.duration = self.getDuration()
         self.timeline.setFixedWidth(self.timeline.duration * self.timeline.scale)

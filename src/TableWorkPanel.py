@@ -1,0 +1,225 @@
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from SubtitleWidget import SubtitleWidget
+import re
+from datetime import datetime
+import time
+
+def validateTimestamp(text):
+    pattern = re.compile("^(2[0-3]|[0-1]?[\d]):[0-5][\d]:[0-5][\d](([:.])\d{1,3})?$")
+    if pattern.search(text):
+        return True
+    elif text == "":
+        return False
+    else:
+        return False
+
+class InputBodyDelegate(QStyledItemDelegate):
+    def createEditor(self, QWidget, QStyleOptionViewItem, QModelIndex):
+        self.textEdit = QPlainTextEdit(QWidget)
+        return self.textEdit
+
+    def destroyEditor(self, QWidget, QModelIndex):
+        return super().destroyEditor(QWidget, QModelIndex)
+
+class InputTimeDelegate(QStyledItemDelegate):
+    def createEditor(self, QWidget, QStyleOptionViewItem, QModelIndex):
+        self.lineEdit = QLineEdit(QWidget)
+        self.lineEdit.textChanged.connect(lambda: self.textChangedSlot(QModelIndex))
+        return self.lineEdit
+    
+    def textChangedSlot(self, index):
+        if index.column() < 2:
+            if validateTimestamp(self.lineEdit.text()):
+                self.lineEdit.setStyleSheet("background-color: #EBFFEB")
+            elif self.lineEdit.text() == "":
+                self.lineEdit.setStyleSheet("background-color: #FFFFFF")
+            else:
+                self.lineEdit.setStyleSheet("background-color: #FA867E")
+
+    def destroyEditor(self, QWidget, QModelIndex):
+        return super().destroyEditor(QWidget, QModelIndex)
+
+class SubtitleTableModel(QAbstractTableModel):
+    dataStore = None
+    headerLabels = ["Start", "End", "Body"]
+
+    refreshRowHeights = pyqtSignal()
+
+    def __init__(self, data):
+        super(SubtitleTableModel, self).__init__()
+        self.dataStore = data
+
+    def data(self, index: QModelIndex, role: int = ...):
+        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
+            return self.dataStore[index.row()][index.column()]
+        if role == Qt.ItemDataRole.BackgroundRole:
+            if index.column() < 2:
+                if validateTimestamp(self.dataStore[index.row()][index.column()]):
+                    return QBrush(QColor("#EBFFEB"))
+                elif self.dataStore[index.row()][index.column()] == "":
+                    return QBrush(QColor("#FFFFFF"))
+                else:
+                    return QBrush(QColor("#FA867E"))
+            else:
+                return QBrush(QColor("#FFFFFF"))
+
+    def setData(self, index: QModelIndex, value, role: int = ...):
+        if role == Qt.ItemDataRole.EditRole:
+            if index.row() < len(self.dataStore):
+                self.dataStore[index.row()][index.column()] = value
+                self.refreshRowHeights.emit()
+            return True
+
+    def rowCount(self, parent=None, *args, **kwargs):
+        return len(self.dataStore)
+
+    def columnCount(self, parent=None, *args, **kwargs):
+        if len(self.dataStore) == 0:
+            return 3
+        else:
+            return len(self.dataStore[0])
+
+    def flags(self, index):
+        return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
+
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...):
+        if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
+            return self.headerLabels[section]
+        return QAbstractTableModel.headerData(self, section, orientation, role)
+
+class SubtitleTable(QTableView):
+    spaceSignal = pyqtSignal()
+    leftSignal = pyqtSignal()
+    rightSignal = pyqtSignal()
+
+    def __init__(self):
+        super(SubtitleTable, self).__init__()
+    
+    def changeRowHeights(self):
+        for row in range(self.model().rowCount()):
+            self.resizeRowToContents(row)
+            self.setRowHeight(row, self.rowHeight(row) + 10)
+
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key.Key_Space:
+            self.spaceSignal.emit()
+        elif QKeyEvent.key() == Qt.Key.Key_Left:
+            self.leftSignal.emit()
+        elif QKeyEvent.key() == Qt.Key.Key_Right:
+            self.rightSignal.emit()
+
+    def mousePressEvent(self, QMouseEvent):
+        clickedIndex = self.indexAt(QMouseEvent.pos())
+        clickedRow = clickedIndex.row()
+
+        if QMouseEvent.button() == Qt.MouseButton.RightButton:
+            if len(self.selectionModel().selectedRows()) == 0 or clickedRow == -1:
+                self.clearSelection()
+
+            for index in self.selectionModel().selectedRows():
+                if index.row() == clickedRow:
+                    self.clearSelection()
+                    return
+
+            self.selectRow(clickedRow)
+
+            self.setDisabled(True)
+            self.setDisabled(False)
+
+        elif QMouseEvent.button() == Qt.MouseButton.LeftButton:
+            if clickedRow == -1:
+                self.clearSelection()
+            else:
+                self.edit(clickedIndex)
+
+class TableWorkPanel(QWidget):
+    subtitleWidgetList = []
+    activeWidgetIndex = None
+    subtitle = None
+    video = None
+    timeline = None
+
+    subtitleList = []
+
+    def __init__(self, subtitle, video, timeline):
+        super(TableWorkPanel, self).__init__()
+
+        self.subtitle = subtitle
+        self.video = video
+        self.timeline = timeline
+
+        self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.setLayout(self.layout)
+
+        self.subtitleTable = SubtitleTable()
+        self.subtitleTable.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.subtitleTable.horizontalHeader().setStretchLastSection(True)
+
+        self.bodyDelegate = InputBodyDelegate()
+        self.timeDelegate = InputTimeDelegate()
+        self.subtitleTable.setItemDelegateForColumn(0, self.timeDelegate)
+        self.subtitleTable.setItemDelegateForColumn(1, self.timeDelegate)
+        self.subtitleTable.setItemDelegateForColumn(2, self.bodyDelegate)
+
+        # start, end, body
+        self.subtitleList = [
+            ["00:00:00.000", "00:00:00.000", "Welcome to Subwiz!"]
+        ]
+
+        self.subtitleModel = SubtitleTableModel(self.subtitleList)
+        self.subtitleTable.setModel(self.subtitleModel)
+        self.subtitleModel.refreshRowHeights.connect(self.subtitleTable.changeRowHeights)
+        self.subtitleTable.changeRowHeights()
+
+        self.layout.addWidget(self.subtitleTable)
+
+        self.show()
+
+        self.subtitleTable.setColumnWidth(0, self.subtitleTable.columnWidth(0) + 10)
+        self.subtitleTable.setColumnWidth(1, self.subtitleTable.columnWidth(1) + 10)
+    
+    def subSearch(self, pos): # milliseconds
+        changed = False
+        for sub in self.subtitleList:
+            testStart = validateTimestamp(sub[0])
+            testEnd = validateTimestamp(sub[1])
+            if testStart and testEnd:
+                start = sub[0]
+                end = sub[1]
+                if "." not in start:
+                    start += ".00"
+                if "." not in end:
+                    end += ".00"
+                start = (datetime.strptime(start, "%H:%M:%S.%f") -
+                         datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
+                end = (datetime.strptime(end, "%H:%M:%S.%f")-
+                         datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
+                if start <= pos / 1000 <= end:
+                    self.subtitle.setText(sub[2])
+                    self.subtitle.adjustSize()
+                    self.subtitle.show()
+                    changed = True
+                    self.subtitle.move(self.video.width() / 2 - (self.subtitle.width() / 2),
+                                       self.video.height() - self.subtitle.height() - 5)
+                    self.subtitle.raise_()
+                    break
+        if not changed:
+            self.subtitle.hide()
+
+    def addSubtitle(self, signalArtefact, start="00:00:00.000", end="00:00:00.000", body=""):
+        self.subtitleList.append([start, end, body])
+        self.subtitleModel.layoutChanged.emit()
+        self.subtitleTable.changeRowHeights()
+
+    def deleteSubtitle(self):
+        rows = []
+        for index in self.subtitleTable.selectionModel().selectedRows():
+            rows.append(index.row())
+        for row in sorted(rows, reverse=True):
+            del self.subtitleList[row]
+        self.subtitleModel.layoutChanged.emit()
+        self.subtitleTable.changeRowHeights()
+

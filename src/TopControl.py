@@ -1,6 +1,6 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
 from datetime import timedelta
 
 class TopControl(QWidget):
@@ -47,7 +47,7 @@ class TopControl(QWidget):
 
         self.duration = str(timedelta(seconds=self.videoInstance.getDuration())).split(".")[0]
         self.timeStampLBL = QLabel("0:00:00 / " + self.duration)
-        self.timeStampLBL.setAlignment(Qt.AlignRight|Qt.AlignVCenter)
+        self.timeStampLBL.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.timeStampLBL.setFixedSize(110, 20)
         self.layout.addWidget(self.timeStampLBL)
 
@@ -128,4 +128,3 @@ class SpeedWidget(QWidget):
         self.buttonList[self.activeButtonIndex].setStyleSheet("color: red;")
         if self.videoInstance.path is not None:
             self.videoInstance.mediaPlayer.setPlaybackRate(self.speedList[self.activeButtonIndex])
-            self.videoInstance.mediaPlayer.setNotifyInterval(self.speedList[self.activeButtonIndex])

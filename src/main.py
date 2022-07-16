@@ -1,12 +1,12 @@
 import os.path
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
 from VideoWidget import VideoWidget
 from Timeline import Timeline
 from TopControl import TopControl
 from BottomControl import BottomControl
-from WorkPanel import WorkPanel
+from TableWorkPanel import TableWorkPanel
 from WaveformWidget import WaveformWidget
 from ExportWidget import ExportWidget
 from ImportWidget import ImportWidget
@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         self.topControl = TopControl(self.video, self.timeline)
         self.videoTimelineVBL.addWidget(self.topControl)
         self.timelineSA = QScrollArea()
-        self.timelineSA.setFocusPolicy(Qt.NoFocus)
+        self.timelineSA.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.timelineSA.setWidgetResizable(True)
         self.timelineSA.setFixedHeight(210)
         self.timelineSA.setWidget(self.timeline)
@@ -46,36 +46,47 @@ class MainWindow(QMainWindow):
         self.subtitle = QLabel("", self.vidContainer)
         self.subtitle.hide()
         self.subtitle.setStyleSheet("color: white; background-color: black")
-        self.subtitle.setAlignment(Qt.AlignCenter)
+        self.subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.workPanel = WorkPanel(self.subtitle, self.video, self.timeline)
+        self.tableWorkPanel = TableWorkPanel(self.subtitle, self.video, self.timeline)
+        self.tableWorkPanel.subtitleTable.spaceSignal.connect(self.topControl.playPauseAction)
+        self.tableWorkPanel.subtitleTable.rightSignal.connect(lambda: self.topControl.forward(1))
+        self.tableWorkPanel.subtitleTable.leftSignal.connect(lambda: self.topControl.back(1))
 
-        self.timeline.passInSubtitles(self.workPanel.subtitleWidgetList)
+        self.timeline.passInSubtitles(self.tableWorkPanel.subtitleList)
 
-        self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline, self.workPanel, self.waveformSA)
+        self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline, self.tableWorkPanel, self.waveformSA)
         self.videoTimelineVBL.addWidget(self.bottomControl)
         self.centreHBL.addLayout(self.videoTimelineVBL, stretch = 2)
 
         self.videoTimelineVBL.setSpacing(1)
 
-        self.containerLayout = QVBoxLayout()
+        self.containerLayout = QVBoxLayout() 
         self.workSA = QScrollArea()
-        self.workSA.setFocusPolicy(Qt.NoFocus)
+        self.workSA.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.workSA.setWidgetResizable(True)
-        self.workSA.setWidget(self.workPanel)
+        self.workSA.setWidget(self.tableWorkPanel)
         self.containerLayout.addWidget(self.workSA)
         self.centreHBL.addLayout(self.containerLayout, stretch = 1)
 
-        self.importPanel = ImportWidget(self.workPanel)
+        self.importPanel = ImportWidget(self.tableWorkPanel)
         self.importPanel.finishedImportSignal.connect(self.finishedImportSlot)
         self.containerLayout.addWidget(self.importPanel)
         self.importPanel.hide()
 
-        self.addSubtitleBTN = QPushButton("Add Subtitle")
-        self.addSubtitleBTN.clicked.connect(lambda: self.workPanel.addSubtitle("", "", ""))
-        self.containerLayout.addWidget(self.addSubtitleBTN)
+        self.addDeleteHBL = QHBoxLayout()
 
-        self.waveformSA.setFocusPolicy(Qt.NoFocus)
+        self.addSubtitleBTN = QPushButton("Add Subtitle")
+        self.addSubtitleBTN.clicked.connect(self.tableWorkPanel.addSubtitle)
+
+        self.deleteSubtitleBTN = QPushButton("Delete Subtitle")
+        self.deleteSubtitleBTN.clicked.connect(self.tableWorkPanel.deleteSubtitle)
+
+        self.containerLayout.addLayout(self.addDeleteHBL)
+        self.addDeleteHBL.addWidget(self.addSubtitleBTN)
+        self.addDeleteHBL.addWidget(self.deleteSubtitleBTN)
+
+        self.waveformSA.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.waveformSA.setWidgetResizable(True)
         self.waveformSA.setFixedHeight(220)
         self.waveformSA.verticalScrollBar().setStyleSheet("height: 0px;")
@@ -103,9 +114,9 @@ class MainWindow(QMainWindow):
         self.showWaveformAction.triggered.connect(self.toggleWaveformVisibility)
         self.viewMenu.addAction(self.showWaveformAction)
 
-        self.video.mediaPlayer.positionChanged.connect(self.workPanel.subSearch)
+        self.video.mediaPlayer.positionChanged.connect(self.tableWorkPanel.subSearch)
 
-        qApp.installEventFilter(self)
+        self.installEventFilter(self)
 
         self.showMaximized()
 
@@ -117,6 +128,8 @@ class MainWindow(QMainWindow):
         self.video.initVideo()
         #---------------------------------------------------------------------------------------------------------------
 
+        self.video.lower()
+
     def importSRT(self):
         srtFilename, _ = QFileDialog.getOpenFileName(self, "Open SRT File", os.path.abspath(os.sep), "(*.srt)")
         if srtFilename != "":
@@ -126,13 +139,19 @@ class MainWindow(QMainWindow):
 
             self.importPanel.importFile(srtFilename)
 
-    def finishedImportSlot(self):
+    def finishedImportSlot(self, newList):
+        self.tableWorkPanel.subtitleList.clear()
+        for sub in newList:
+            self.tableWorkPanel.subtitleList.append(sub)
+        self.tableWorkPanel.subtitleModel.layoutChanged.emit()
+        self.tableWorkPanel.subtitleTable.changeRowHeights()
         self.importPanel.hide()
         self.workSA.show()
         self.addSubtitleBTN.show()
+        self.timeline.update()
 
     def exportSRT(self):
-        self.exportWidget = ExportWidget(self.workPanel.subtitleWidgetList)
+        self.exportWidget = ExportWidget(self.tableWorkPanel.subtitleList)
 
     def toggleWaveformVisibility(self):
         if self.waveformSA.isVisible():
@@ -147,12 +166,12 @@ class MainWindow(QMainWindow):
                            self.vidContainer.height() - self.subtitle.height())
 
     def eventFilter(self, source, event):
-        if event.type() == QEvent.KeyPress and self.video.path is not None and source is self:
-            if event.key() == Qt.Key_Space:
+        if event.type() == QEvent.Type.KeyPress and self.video.path is not None and source is self:
+            if event.key() == Qt.Key.Key_Space:
                 self.topControl.playPauseAction()
-            elif event.key() == Qt.Key_Right:
+            elif event.key() == Qt.Key.Key_Right:
                 self.topControl.forward(1)
-            elif event.key() == Qt.Key_Left:
+            elif event.key() == Qt.Key.Key_Left:
                 self.topControl.back(1)
         return False
 

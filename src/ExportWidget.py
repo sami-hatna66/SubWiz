@@ -1,6 +1,6 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
 import os
 
 class ExportWidget(QWidget):
@@ -12,7 +12,7 @@ class ExportWidget(QWidget):
 
         self.subtitleList = subtitleList
 
-        self.setAttribute(Qt.WA_QuitOnClose, False)
+        self.setAttribute(Qt.WidgetAttribute.WA_QuitOnClose, False)
 
         self.layout = QGridLayout()
         self.setLayout(self.layout)
@@ -35,7 +35,7 @@ class ExportWidget(QWidget):
         self.exportBTN.clicked.connect(self.export)
         self.layout.addWidget(self.exportBTN, 3, 0, 1, 2)
 
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.show()
 
     def selectPath(self):
@@ -51,10 +51,10 @@ class ExportWidget(QWidget):
             self.locationBTN.setStyleSheet("color: red")
         else:
             outputFile = open(self.exportPath + "/" + self.nameTB.text() + ".srt", "w")
-            for sub in self.subtitleList:
-                lines = [str(sub.numberLBL.text()) + "\n",
-                         sub.startTB.text() + " --> " + sub.endTB.text() + "\n",
-                         sub.subtitleBodyTB.toPlainText() + "\n",
+            for x in range(0, len(self.subtitleList)):
+                lines = [str(x + 1) + "\n",
+                         self.subtitleList[x][0] + " --> " + self.subtitleList[x][1] + "\n",
+                         self.subtitleList[x][2] + "\n",
                          "\n"]
                 outputFile.writelines(lines)
             outputFile.close()
