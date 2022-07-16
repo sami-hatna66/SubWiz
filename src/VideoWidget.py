@@ -1,12 +1,12 @@
 from PyQt6.QtMultimedia import QMediaPlayer
-from PyQt6.QtMultimediaWidgets import QVideoWidget
+from PyQt6.QtMultimediaWidgets import QGraphicsVideoItem
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 import os
 import cv2
 
-class VideoWidget(QVideoWidget):
+class VideoWidget(QWidget):
     path = None
     mediaPlayer = None
     placeholderLBL = None
@@ -19,6 +19,21 @@ class VideoWidget(QVideoWidget):
         self.path = path
 
         self.placeholderLBL = QLabel("Drag file or click", self)
+
+        self.scene = QGraphicsScene()
+        self.view = QGraphicsView(self.scene, self)
+        self.view.setEnabled(False)
+        self.view.hide()
+        self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        self.videoItem = QGraphicsVideoItem()
+        self.scene.addItem(self.videoItem)
+
+        self.subItem = QLabel("Hey There\npog")
+        self.subItem.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.subItem.setStyleSheet("color: white; background-color: black; font-size: 3px;")
+        self.scene.addWidget(self.subItem)
 
         self.mediaPlayer = QMediaPlayer(None)
 
@@ -48,7 +63,7 @@ class VideoWidget(QVideoWidget):
 
     def initVideo(self):
         self.placeholderLBL.setParent(None)
-        self.mediaPlayer.setVideoOutput(self)
+        self.mediaPlayer.setVideoOutput(self.videoItem)
         self.mediaPlayer.setSource(QUrl.fromLocalFile(self.path))
         self.mediaPlayer.play()
         self.timeline.duration = self.getDuration()
@@ -56,6 +71,22 @@ class VideoWidget(QVideoWidget):
         self.mediaPlayer.positionChanged.connect(self.timeline.setPlayheadPos)
         self.timeline.update()
         self.mediaLoadedSignal.emit(self.path)
+
+        self.videoItem.setSize(self.videoItem.size())
+        self.view.show()
+        self.view.resize(self.size())
+
+        self.resize(100, 100)
+    
+    def resizeEvent(self, QResizeEvent):
+        self.view.resize(self.size())
+        videoRect = self.videoItem.boundingRect()
+        self.subItem.move(videoRect.x() + (videoRect.width() / 2) - (self.subItem.width() / 2), 
+						  videoRect.y() + videoRect.height() - self.subItem.height())
+
+        rect = self.videoItem.boundingRect()
+
+        self.view.fitInView(rect, Qt.AspectRatioMode.KeepAspectRatio)
 
     def mousePressEvent(self, QMouseEvent):
         if self.path is None:
@@ -80,14 +111,14 @@ class VideoWidget(QVideoWidget):
 
     def dragMoveEvent(self, event):
         if event.mimeData().hasUrls:
-            event.setDropAction(Qt.CopyAction)
+            event.setDropAction(Qt.DropAction.CopyAction)
             event.accept()
         else:
             event.ignore()
 
     def dropEvent(self, event):
         if event.mimeData().hasUrls:
-            event.setDropAction(Qt.CopyAction)
+            event.setDropAction(Qt.DropAction.CopyAction)
             event.accept()
             results = []
             for url in event.mimeData().urls():

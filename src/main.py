@@ -128,8 +128,6 @@ class MainWindow(QMainWindow):
         self.video.initVideo()
         #---------------------------------------------------------------------------------------------------------------
 
-        self.video.lower()
-
     def importSRT(self):
         srtFilename, _ = QFileDialog.getOpenFileName(self, "Open SRT File", os.path.abspath(os.sep), "(*.srt)")
         if srtFilename != "":
