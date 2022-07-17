@@ -23,6 +23,7 @@ class VideoWidget(QWidget):
 
         self.scene = QGraphicsScene()
         self.view = QGraphicsView(self.scene, self)
+        self.view.setBackgroundBrush(QBrush(Qt.GlobalColor.black))
         self.view.setEnabled(False)
         self.view.hide()
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -73,6 +74,16 @@ class VideoWidget(QWidget):
         self.view.resize(self.size())
 
         self.resize(100, 100)
+    
+    def selectVideo(self):
+        self.path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Video File",
+            os.path.abspath(os.sep),
+            "Video files (*.mp4 *.mkv *.mov *.wmv)",
+        )
+        if self.path:
+            self.initVideo()
 
     def resizeEvent(self, QResizeEvent):
         self.view.resize(self.size())
@@ -84,16 +95,7 @@ class VideoWidget(QWidget):
 
     def mousePressEvent(self, QMouseEvent):
         if self.path is None:
-            self.path, _ = QFileDialog.getOpenFileName(
-                self,
-                "Open Video File",
-                os.path.abspath(os.sep),
-                "Video files (*.mp4 *.mkv *.mov *.wmv)",
-            )
-            if self.path:
-                self.initVideo()
-            else:
-                self.path = None
+            self.selectVideo()
 
     def dragEnterEvent(self, event):
         self.setStyleSheet("border: 1px solid black")

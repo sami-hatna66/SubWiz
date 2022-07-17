@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 import math
 from datetime import datetime
-from TableWorkPanel import validateTimestamp
+from WorkPanel import validateTimestampFormat
 
 
 class Timeline(QWidget):
@@ -123,8 +123,8 @@ class Timeline(QWidget):
         if self.subtitleList is not None:
             count = 0
             for sub in self.subtitleList:
-                test1 = validateTimestamp(sub[0])
-                test2 = validateTimestamp(sub[1])
+                test1 = validateTimestampFormat(sub[0])
+                test2 = validateTimestampFormat(sub[1])
                 if test1 and test2:
                     start = sub[0]
                     end = sub[1]

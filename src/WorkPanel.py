@@ -1,13 +1,12 @@
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
-from SubtitleWidget import SubtitleWidget
 import re
 from datetime import datetime
 import time
 
 
-def validateTimestamp(text):
+def validateTimestampFormat(text):
     pattern = re.compile("^(2[0-3]|[0-1]?[\d]):[0-5][\d]:[0-5][\d](([:.])\d{1,3})?$")
     if pattern.search(text):
         return True
@@ -34,7 +33,7 @@ class InputTimeDelegate(QStyledItemDelegate):
 
     def textChangedSlot(self, index):
         if index.column() < 2:
-            if validateTimestamp(self.lineEdit.text()):
+            if validateTimestampFormat(self.lineEdit.text()):
                 self.lineEdit.setStyleSheet("background-color: #EBFFEB")
             elif self.lineEdit.text() == "":
                 self.lineEdit.setStyleSheet("background-color: #FFFFFF")
@@ -60,7 +59,7 @@ class SubtitleTableModel(QAbstractTableModel):
             return self.dataStore[index.row()][index.column()]
         if role == Qt.ItemDataRole.BackgroundRole:
             if index.column() < 2:
-                if validateTimestamp(self.dataStore[index.row()][index.column()]):
+                if validateTimestampFormat(self.dataStore[index.row()][index.column()]):
                     return QBrush(QColor("#EBFFEB"))
                 elif self.dataStore[index.row()][index.column()] == "":
                     return QBrush(QColor("#FFFFFF"))
@@ -147,7 +146,7 @@ class SubtitleTable(QTableView):
                 self.edit(clickedIndex)
 
 
-class TableWorkPanel(QWidget):
+class WorkPanel(QWidget):
     subtitleWidgetList = []
     activeWidgetIndex = None
     subtitle = None
@@ -157,7 +156,7 @@ class TableWorkPanel(QWidget):
     subtitleList = []
 
     def __init__(self, subtitle, video, timeline):
-        super(TableWorkPanel, self).__init__()
+        super(WorkPanel, self).__init__()
 
         self.subtitle = subtitle
         self.video = video
@@ -199,8 +198,8 @@ class TableWorkPanel(QWidget):
     def subSearch(self, pos):  # milliseconds
         changed = False
         for sub in self.subtitleList:
-            testStart = validateTimestamp(sub[0])
-            testEnd = validateTimestamp(sub[1])
+            testStart = validateTimestampFormat(sub[0])
+            testEnd = validateTimestampFormat(sub[1])
             if testStart and testEnd:
                 start = sub[0]
                 end = sub[1]

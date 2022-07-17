@@ -6,7 +6,7 @@ from VideoWidget import VideoWidget
 from Timeline import Timeline
 from TopControl import TopControl
 from BottomControl import BottomControl
-from TableWorkPanel import TableWorkPanel
+from WorkPanel import WorkPanel
 from WaveformWidget import WaveformWidget
 from ExportWidget import ExportWidget
 from ImportWidget import ImportWidget
@@ -49,24 +49,22 @@ class MainWindow(QMainWindow):
         self.subtitle.setStyleSheet("color: white; background-color: black")
         self.subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.tableWorkPanel = TableWorkPanel(self.subtitle, self.video, self.timeline)
-        self.tableWorkPanel.subtitleTable.spaceSignal.connect(
+        self.workPanel = WorkPanel(self.subtitle, self.video, self.timeline)
+        self.workPanel.subtitleTable.spaceSignal.connect(
             self.topControl.playPauseAction
         )
-        self.tableWorkPanel.subtitleTable.rightSignal.connect(
+        self.workPanel.subtitleTable.rightSignal.connect(
             lambda: self.topControl.forward(1)
         )
-        self.tableWorkPanel.subtitleTable.leftSignal.connect(
-            lambda: self.topControl.back(1)
-        )
+        self.workPanel.subtitleTable.leftSignal.connect(lambda: self.topControl.back(1))
 
-        self.timeline.passInSubtitles(self.tableWorkPanel.subtitleList)
+        self.timeline.passInSubtitles(self.workPanel.subtitleList)
 
         self.bottomControl = BottomControl(
             self.video,
             self.timelineSA,
             self.timeline,
-            self.tableWorkPanel,
+            self.workPanel,
             self.waveformSA,
         )
         self.videoTimelineVBL.addWidget(self.bottomControl)
@@ -78,11 +76,11 @@ class MainWindow(QMainWindow):
         self.workSA = QScrollArea()
         self.workSA.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.workSA.setWidgetResizable(True)
-        self.workSA.setWidget(self.tableWorkPanel)
+        self.workSA.setWidget(self.workPanel)
         self.containerLayout.addWidget(self.workSA)
         self.centreHBL.addLayout(self.containerLayout, stretch=1)
 
-        self.importPanel = ImportWidget(self.tableWorkPanel)
+        self.importPanel = ImportWidget(self.workPanel)
         self.importPanel.finishedImportSignal.connect(self.finishedImportSlot)
         self.containerLayout.addWidget(self.importPanel)
         self.importPanel.hide()
@@ -90,10 +88,10 @@ class MainWindow(QMainWindow):
         self.addDeleteHBL = QHBoxLayout()
 
         self.addSubtitleBTN = QPushButton("Add Subtitle")
-        self.addSubtitleBTN.clicked.connect(self.tableWorkPanel.addSubtitle)
+        self.addSubtitleBTN.clicked.connect(self.workPanel.addSubtitle)
 
         self.deleteSubtitleBTN = QPushButton("Delete Subtitle")
-        self.deleteSubtitleBTN.clicked.connect(self.tableWorkPanel.deleteSubtitle)
+        self.deleteSubtitleBTN.clicked.connect(self.workPanel.deleteSubtitle)
 
         self.containerLayout.addLayout(self.addDeleteHBL)
         self.addDeleteHBL.addWidget(self.addSubtitleBTN)
@@ -113,6 +111,10 @@ class MainWindow(QMainWindow):
 
         self.fileMenu = self.mainMenu.addMenu(" &File")
 
+        self.importNewVidAction = QAction("Import New Video File", self)
+        self.importNewVidAction.triggered.connect(self.video.selectVideo)
+        self.fileMenu.addAction(self.importNewVidAction)
+
         self.importSRTAction = QAction("Import SRT File", self)
         self.importSRTAction.triggered.connect(self.importSRT)
         self.fileMenu.addAction(self.importSRTAction)
@@ -127,7 +129,7 @@ class MainWindow(QMainWindow):
         self.showWaveformAction.triggered.connect(self.toggleWaveformVisibility)
         self.viewMenu.addAction(self.showWaveformAction)
 
-        self.video.mediaPlayer.positionChanged.connect(self.tableWorkPanel.subSearch)
+        self.video.mediaPlayer.positionChanged.connect(self.workPanel.subSearch)
 
         self.installEventFilter(self)
 
@@ -139,8 +141,8 @@ class MainWindow(QMainWindow):
         )
 
         # ---------------------------------------------------------------------------------------------------------------
-        self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
         self.video.initVideo()
+        self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
         # ---------------------------------------------------------------------------------------------------------------
 
     def importSRT(self):
@@ -155,18 +157,18 @@ class MainWindow(QMainWindow):
             self.importPanel.importFile(srtFilename)
 
     def finishedImportSlot(self, newList):
-        self.tableWorkPanel.subtitleList.clear()
+        self.workPanel.subtitleList.clear()
         for sub in newList:
-            self.tableWorkPanel.subtitleList.append(sub)
-        self.tableWorkPanel.subtitleModel.layoutChanged.emit()
-        self.tableWorkPanel.subtitleTable.changeRowHeights()
+            self.workPanel.subtitleList.append(sub)
+        self.workPanel.subtitleModel.layoutChanged.emit()
+        self.workPanel.subtitleTable.changeRowHeights()
         self.importPanel.hide()
         self.workSA.show()
         self.addSubtitleBTN.show()
         self.timeline.update()
 
     def exportSRT(self):
-        self.exportWidget = ExportWidget(self.tableWorkPanel.subtitleList)
+        self.exportWidget = ExportWidget(self.workPanel.subtitleList)
 
     def toggleWaveformVisibility(self):
         if self.waveformSA.isVisible():
