@@ -3,11 +3,16 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 import re
 
+
 class SubtitleWidget(QWidget):
     deleteSignal = pyqtSignal(QObject)
     clickSignal = pyqtSignal(QObject)
 
-    formattingTypes = {"bold": ["<b>", "</b>"], "italic": ["<i>", "</i>"], "underline": ["<u>", "</u>"]}
+    formattingTypes = {
+        "bold": ["<b>", "</b>"],
+        "italic": ["<i>", "</i>"],
+        "underline": ["<u>", "</u>"],
+    }
 
     def __init__(self, number, start, end, body):
         super(SubtitleWidget, self).__init__()
@@ -57,21 +62,29 @@ class SubtitleWidget(QWidget):
 
         self.setFixedHeight(250)
 
-        #qApp.installEventFilter(self)
+        # qApp.installEventFilter(self)
 
         self.show()
 
     def insertFormatting(self, type):
         cursor = self.subtitleBodyTB.textCursor()
         if cursor.hasSelection():
-            cursor.insertText(self.formattingTypes[type][0] + cursor.selectedText() + self.formattingTypes[type][1])
+            cursor.insertText(
+                self.formattingTypes[type][0]
+                + cursor.selectedText()
+                + self.formattingTypes[type][1]
+            )
         else:
-            cursor.insertText(self.formattingTypes[type][0] + self.formattingTypes[type][1])
+            cursor.insertText(
+                self.formattingTypes[type][0] + self.formattingTypes[type][1]
+            )
             cursor.setPosition(cursor.position() - 4)
             self.subtitleBodyTB.setTextCursor(cursor)
 
     def validateTimestamp(self, sender):
-        pattern = re.compile("^(2[0-3]|[0-1]?[\d]):[0-5][\d]:[0-5][\d](([:.])\d{1,3})?$")
+        pattern = re.compile(
+            "^(2[0-3]|[0-1]?[\d]):[0-5][\d]:[0-5][\d](([:.])\d{1,3})?$"
+        )
         if pattern.search(sender.text()):
             sender.setStyleSheet("background-color: #EBFFEB")
             return True
@@ -83,7 +96,9 @@ class SubtitleWidget(QWidget):
             return False
 
     def eventFilter(self, source, event):
-        if event.type() == event.FocusIn and (isinstance(source, QLineEdit) or isinstance(source, QTextEdit)):
+        if event.type() == event.FocusIn and (
+            isinstance(source, QLineEdit) or isinstance(source, QTextEdit)
+        ):
             self.clickSignal.emit(self)
         return False
 

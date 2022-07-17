@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from moviepy.editor import VideoFileClip, concatenate
 
+
 class WaveformWidget(QWidget):
     canDraw = False
     data = []
@@ -53,6 +54,7 @@ class WaveformWidget(QWidget):
             painter.drawLine(self.playheadPos, 0, self.playheadPos, 220)
 
         painter.end()
+
 
 class AudioDataWorker(QThread):
     completeSignal = pyqtSignal(list)

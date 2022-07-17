@@ -6,6 +6,7 @@ import re
 from datetime import datetime
 import time
 
+
 def validateTimestamp(text):
     pattern = re.compile("^(2[0-3]|[0-1]?[\d]):[0-5][\d]:[0-5][\d](([:.])\d{1,3})?$")
     if pattern.search(text):
@@ -15,6 +16,7 @@ def validateTimestamp(text):
     else:
         return False
 
+
 class InputBodyDelegate(QStyledItemDelegate):
     def createEditor(self, QWidget, QStyleOptionViewItem, QModelIndex):
         self.textEdit = QPlainTextEdit(QWidget)
@@ -23,12 +25,13 @@ class InputBodyDelegate(QStyledItemDelegate):
     def destroyEditor(self, QWidget, QModelIndex):
         return super().destroyEditor(QWidget, QModelIndex)
 
+
 class InputTimeDelegate(QStyledItemDelegate):
     def createEditor(self, QWidget, QStyleOptionViewItem, QModelIndex):
         self.lineEdit = QLineEdit(QWidget)
         self.lineEdit.textChanged.connect(lambda: self.textChangedSlot(QModelIndex))
         return self.lineEdit
-    
+
     def textChangedSlot(self, index):
         if index.column() < 2:
             if validateTimestamp(self.lineEdit.text()):
@@ -40,6 +43,7 @@ class InputTimeDelegate(QStyledItemDelegate):
 
     def destroyEditor(self, QWidget, QModelIndex):
         return super().destroyEditor(QWidget, QModelIndex)
+
 
 class SubtitleTableModel(QAbstractTableModel):
     dataStore = None
@@ -82,12 +86,20 @@ class SubtitleTableModel(QAbstractTableModel):
             return len(self.dataStore[0])
 
     def flags(self, index):
-        return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable
+        return (
+            Qt.ItemFlag.ItemIsEnabled
+            | Qt.ItemFlag.ItemIsSelectable
+            | Qt.ItemFlag.ItemIsEditable
+        )
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...):
-        if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
+        if (
+            role == Qt.ItemDataRole.DisplayRole
+            and orientation == Qt.Orientation.Horizontal
+        ):
             return self.headerLabels[section]
         return QAbstractTableModel.headerData(self, section, orientation, role)
+
 
 class SubtitleTable(QTableView):
     spaceSignal = pyqtSignal()
@@ -96,7 +108,7 @@ class SubtitleTable(QTableView):
 
     def __init__(self):
         super(SubtitleTable, self).__init__()
-    
+
     def changeRowHeights(self):
         for row in range(self.model().rowCount()):
             self.resizeRowToContents(row)
@@ -134,6 +146,7 @@ class SubtitleTable(QTableView):
             else:
                 self.edit(clickedIndex)
 
+
 class TableWorkPanel(QWidget):
     subtitleWidgetList = []
     activeWidgetIndex = None
@@ -155,7 +168,9 @@ class TableWorkPanel(QWidget):
         self.setLayout(self.layout)
 
         self.subtitleTable = SubtitleTable()
-        self.subtitleTable.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.subtitleTable.setSelectionBehavior(
+            QAbstractItemView.SelectionBehavior.SelectRows
+        )
         self.subtitleTable.horizontalHeader().setStretchLastSection(True)
 
         self.bodyDelegate = InputBodyDelegate()
@@ -165,13 +180,13 @@ class TableWorkPanel(QWidget):
         self.subtitleTable.setItemDelegateForColumn(2, self.bodyDelegate)
 
         # start, end, body
-        self.subtitleList = [
-            ["00:00:00.000", "00:00:00.000", "Welcome to Subwiz!"]
-        ]
+        self.subtitleList = [["00:00:00.000", "00:00:00.000", "Welcome to Subwiz!"]]
 
         self.subtitleModel = SubtitleTableModel(self.subtitleList)
         self.subtitleTable.setModel(self.subtitleModel)
-        self.subtitleModel.refreshRowHeights.connect(self.subtitleTable.changeRowHeights)
+        self.subtitleModel.refreshRowHeights.connect(
+            self.subtitleTable.changeRowHeights
+        )
         self.subtitleTable.changeRowHeights()
 
         self.layout.addWidget(self.subtitleTable)
@@ -180,8 +195,8 @@ class TableWorkPanel(QWidget):
 
         self.subtitleTable.setColumnWidth(0, self.subtitleTable.columnWidth(0) + 10)
         self.subtitleTable.setColumnWidth(1, self.subtitleTable.columnWidth(1) + 10)
-    
-    def subSearch(self, pos): # milliseconds
+
+    def subSearch(self, pos):  # milliseconds
         changed = False
         for sub in self.subtitleList:
             testStart = validateTimestamp(sub[0])
@@ -193,23 +208,31 @@ class TableWorkPanel(QWidget):
                     start += ".00"
                 if "." not in end:
                     end += ".00"
-                start = (datetime.strptime(start, "%H:%M:%S.%f") -
-                         datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
-                end = (datetime.strptime(end, "%H:%M:%S.%f")-
-                         datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
+                start = (
+                    datetime.strptime(start, "%H:%M:%S.%f")
+                    - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
+                ).total_seconds()
+                end = (
+                    datetime.strptime(end, "%H:%M:%S.%f")
+                    - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
+                ).total_seconds()
                 if start <= pos / 1000 <= end:
                     self.subtitle.setText(sub[2])
                     self.subtitle.adjustSize()
                     self.subtitle.show()
                     changed = True
-                    self.subtitle.move(self.video.width() / 2 - (self.subtitle.width() / 2),
-                                       self.video.height() - self.subtitle.height() - 5)
+                    self.subtitle.move(
+                        self.video.width() / 2 - (self.subtitle.width() / 2),
+                        self.video.height() - self.subtitle.height() - 5,
+                    )
                     self.subtitle.raise_()
                     break
         if not changed:
             self.subtitle.hide()
 
-    def addSubtitle(self, signalArtefact, start="00:00:00.000", end="00:00:00.000", body=""):
+    def addSubtitle(
+        self, signalArtefact, start="00:00:00.000", end="00:00:00.000", body=""
+    ):
         self.subtitleList.append([start, end, body])
         self.subtitleModel.layoutChanged.emit()
         self.subtitleTable.changeRowHeights()
@@ -222,4 +245,3 @@ class TableWorkPanel(QWidget):
             del self.subtitleList[row]
         self.subtitleModel.layoutChanged.emit()
         self.subtitleTable.changeRowHeights()
-

@@ -5,6 +5,7 @@ import math
 from datetime import datetime
 from TableWorkPanel import validateTimestamp
 
+
 class Timeline(QWidget):
     duration = None
     scale = 5
@@ -94,10 +95,18 @@ class Timeline(QWidget):
                 if i % 60 == 0:
                     pass
                 elif i < 60:
-                   painter.drawText(i * self.scale * 60 - 15, 27, "00:" + str(i).zfill(2) + ":00")
+                    painter.drawText(
+                        i * self.scale * 60 - 15, 27, "00:" + str(i).zfill(2) + ":00"
+                    )
                 else:
-                    painter.drawText(i * self.scale * 60 - 15, 27, str(i // 60).zfill(2) + ":"
-                                     + str(i - (60 * (i // 60))).zfill(2) + ":00")
+                    painter.drawText(
+                        i * self.scale * 60 - 15,
+                        27,
+                        str(i // 60).zfill(2)
+                        + ":"
+                        + str(i - (60 * (i // 60))).zfill(2)
+                        + ":00",
+                    )
 
         hours = int(self.duration // 3600)
         for i in range(1, hours + 1):
@@ -123,10 +132,14 @@ class Timeline(QWidget):
                         start += ".00"
                     if "." not in end:
                         end += ".00"
-                    start = (datetime.strptime(start, "%H:%M:%S.%f") -
-                             datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
-                    end = (datetime.strptime(end, "%H:%M:%S.%f") -
-                           datetime.strptime("00:00:00.00", "%H:%M:%S.%f")).total_seconds()
+                    start = (
+                        datetime.strptime(start, "%H:%M:%S.%f")
+                        - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
+                    ).total_seconds()
+                    end = (
+                        datetime.strptime(end, "%H:%M:%S.%f")
+                        - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
+                    ).total_seconds()
                     if start != end:
                         data.append([start, end, count])
                 count += 1
@@ -148,14 +161,18 @@ class Timeline(QWidget):
                 lane = lanesData[x][1]
                 painter.setPen(QPen(QColor(colours[colourIndex])))
                 painter.setBrush(QBrush(QColor(colours[colourIndex])))
-                painter.drawRect(start * self.scale, 60 + (lane * 30), (end - start) * self.scale, 20)
+                painter.drawRect(
+                    start * self.scale, 60 + (lane * 30), (end - start) * self.scale, 20
+                )
                 colourIndex = 0 if colourIndex >= len(colours) - 1 else colourIndex + 1
                 painter.setPen(QPen(Qt.GlobalColor.black))
                 font = QFont()
                 font.setPointSize(15)
                 painter.setFont(font)
                 if self.scaleIndex > 4:
-                    painter.drawText(start * self.scale + 5, 75 + (lane * 30), str(num + 1))
+                    painter.drawText(
+                        start * self.scale + 5, 75 + (lane * 30), str(num + 1)
+                    )
 
         painter.setPen(QPen(Qt.GlobalColor.black))
         painter.drawLine(0, 40, self.width(), 40)

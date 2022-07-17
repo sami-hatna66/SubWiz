@@ -2,6 +2,7 @@ from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 
+
 class BottomControl(QWidget):
     timelineSA = None
     timeline = None
@@ -38,12 +39,18 @@ class BottomControl(QWidget):
         self.setFixedHeight(40)
 
     def goToPlayhead(self):
-        self.timelineSA.horizontalScrollBar().setValue(int(
-            self.timeline.playheadPos - (self.timelineSA.visibleRegion().boundingRect().width() / 2)
-        ))
-        self.waveformSA.horizontalScrollBar().setValue(int(
-            (self.video.mediaPlayer.position() / 1000) - (self.waveformSA.visibleRegion().boundingRect().width() / 2)
-        ))
+        self.timelineSA.horizontalScrollBar().setValue(
+            int(
+                self.timeline.playheadPos
+                - (self.timelineSA.visibleRegion().boundingRect().width() / 2)
+            )
+        )
+        self.waveformSA.horizontalScrollBar().setValue(
+            int(
+                (self.video.mediaPlayer.position() / 1000)
+                - (self.waveformSA.visibleRegion().boundingRect().width() / 2)
+            )
+        )
 
     @staticmethod
     def msecToTimeStamp(time):
@@ -58,14 +65,22 @@ class BottomControl(QWidget):
 
     def markStartTime(self):
         for index in self.workPanel.subtitleTable.selectionModel().selectedRows():
-            self.workPanel.subtitleList[index.row()][0] = str(self.msecToTimeStamp(self.video.mediaPlayer.position()))
-            self.workPanel.subtitleModel.setData(self.workPanel.subtitleList, Qt.ItemDataRole.DisplayRole)
+            self.workPanel.subtitleList[index.row()][0] = str(
+                self.msecToTimeStamp(self.video.mediaPlayer.position())
+            )
+            self.workPanel.subtitleModel.setData(
+                self.workPanel.subtitleList, Qt.ItemDataRole.DisplayRole
+            )
             self.workPanel.subtitleTable.clearSelection()
             self.workPanel.subtitleTable.selectRow(index.row())
 
     def markEndTime(self):
         for index in self.workPanel.subtitleTable.selectionModel().selectedRows():
-            self.workPanel.subtitleList[index.row()][1] = str(self.msecToTimeStamp(self.video.mediaPlayer.position()))
-            self.workPanel.subtitleModel.setData(self.workPanel.subtitleList, Qt.ItemDataRole.DisplayRole)
+            self.workPanel.subtitleList[index.row()][1] = str(
+                self.msecToTimeStamp(self.video.mediaPlayer.position())
+            )
+            self.workPanel.subtitleModel.setData(
+                self.workPanel.subtitleList, Qt.ItemDataRole.DisplayRole
+            )
             self.workPanel.subtitleTable.clearSelection()
             self.workPanel.subtitleTable.selectRow(index.row())

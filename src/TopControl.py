@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from datetime import timedelta
 
+
 class TopControl(QWidget):
     videoInstance = None
     timelineInstance = None
@@ -16,7 +17,7 @@ class TopControl(QWidget):
 
         self.layout = QHBoxLayout()
         self.layout.setSpacing(5)
-        self.layout.setContentsMargins(0,0 ,0 ,0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
 
         self.backBTN = QPushButton("<")
@@ -45,9 +46,13 @@ class TopControl(QWidget):
         self.zoomOutBTN.clicked.connect(self.timelineInstance.zoomOut)
         self.layout.addWidget(self.zoomOutBTN)
 
-        self.duration = str(timedelta(seconds=self.videoInstance.getDuration())).split(".")[0]
+        self.duration = str(timedelta(seconds=self.videoInstance.getDuration())).split(
+            "."
+        )[0]
         self.timeStampLBL = QLabel("0:00:00 / " + self.duration)
-        self.timeStampLBL.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self.timeStampLBL.setAlignment(
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        )
         self.timeStampLBL.setFixedSize(110, 20)
         self.layout.addWidget(self.timeStampLBL)
 
@@ -82,9 +87,11 @@ class TopControl(QWidget):
 
     def changeTimeStamp(self, newTime):
         if self.duration == "0:00:00":
-            self.duration = str(timedelta(seconds=self.videoInstance.getDuration() / 1000)).split(".")[0]
+            self.duration = str(
+                timedelta(seconds=self.videoInstance.getDuration() / 1000)
+            ).split(".")[0]
         self.timeStampLBL.setText(
-            str(timedelta(seconds = newTime / 1000)).split(".")[0] + " / " + self.duration
+            str(timedelta(seconds=newTime / 1000)).split(".")[0] + " / " + self.duration
         )
 
     def changeSpeed(self):
@@ -92,7 +99,10 @@ class TopControl(QWidget):
         self.activeButtonIndex = self.buttonList.index(self.sender())
         self.buttonList[self.activeButtonIndex].setStyleSheet("color: red;")
         if self.videoInstance.path is not None:
-            self.videoInstance.mediaPlayer.setPlaybackRate(self.speedList[self.activeButtonIndex])
+            self.videoInstance.mediaPlayer.setPlaybackRate(
+                self.speedList[self.activeButtonIndex]
+            )
+
 
 class SpeedWidget(QWidget):
     videoInstance = None
@@ -127,4 +137,6 @@ class SpeedWidget(QWidget):
         self.activeButtonIndex = self.buttonList.index(self.sender())
         self.buttonList[self.activeButtonIndex].setStyleSheet("color: red;")
         if self.videoInstance.path is not None:
-            self.videoInstance.mediaPlayer.setPlaybackRate(self.speedList[self.activeButtonIndex])
+            self.videoInstance.mediaPlayer.setPlaybackRate(
+                self.speedList[self.activeButtonIndex]
+            )

@@ -12,6 +12,7 @@ from ExportWidget import ExportWidget
 from ImportWidget import ImportWidget
 import sys
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -49,25 +50,37 @@ class MainWindow(QMainWindow):
         self.subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.tableWorkPanel = TableWorkPanel(self.subtitle, self.video, self.timeline)
-        self.tableWorkPanel.subtitleTable.spaceSignal.connect(self.topControl.playPauseAction)
-        self.tableWorkPanel.subtitleTable.rightSignal.connect(lambda: self.topControl.forward(1))
-        self.tableWorkPanel.subtitleTable.leftSignal.connect(lambda: self.topControl.back(1))
+        self.tableWorkPanel.subtitleTable.spaceSignal.connect(
+            self.topControl.playPauseAction
+        )
+        self.tableWorkPanel.subtitleTable.rightSignal.connect(
+            lambda: self.topControl.forward(1)
+        )
+        self.tableWorkPanel.subtitleTable.leftSignal.connect(
+            lambda: self.topControl.back(1)
+        )
 
         self.timeline.passInSubtitles(self.tableWorkPanel.subtitleList)
 
-        self.bottomControl = BottomControl(self.video, self.timelineSA, self.timeline, self.tableWorkPanel, self.waveformSA)
+        self.bottomControl = BottomControl(
+            self.video,
+            self.timelineSA,
+            self.timeline,
+            self.tableWorkPanel,
+            self.waveformSA,
+        )
         self.videoTimelineVBL.addWidget(self.bottomControl)
-        self.centreHBL.addLayout(self.videoTimelineVBL, stretch = 2)
+        self.centreHBL.addLayout(self.videoTimelineVBL, stretch=2)
 
         self.videoTimelineVBL.setSpacing(1)
 
-        self.containerLayout = QVBoxLayout() 
+        self.containerLayout = QVBoxLayout()
         self.workSA = QScrollArea()
         self.workSA.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.workSA.setWidgetResizable(True)
         self.workSA.setWidget(self.tableWorkPanel)
         self.containerLayout.addWidget(self.workSA)
-        self.centreHBL.addLayout(self.containerLayout, stretch = 1)
+        self.centreHBL.addLayout(self.containerLayout, stretch=1)
 
         self.importPanel = ImportWidget(self.tableWorkPanel)
         self.importPanel.finishedImportSignal.connect(self.finishedImportSlot)
@@ -120,16 +133,20 @@ class MainWindow(QMainWindow):
 
         self.showMaximized()
 
-        self.subtitle.move(self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
-                           self.vidContainer.height() - self.subtitle.height() - 5)
+        self.subtitle.move(
+            self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
+            self.vidContainer.height() - self.subtitle.height() - 5,
+        )
 
-        #---------------------------------------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------------------------------------------
         self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
         self.video.initVideo()
-        #---------------------------------------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------------------------------------------
 
     def importSRT(self):
-        srtFilename, _ = QFileDialog.getOpenFileName(self, "Open SRT File", os.path.abspath(os.sep), "(*.srt)")
+        srtFilename, _ = QFileDialog.getOpenFileName(
+            self, "Open SRT File", os.path.abspath(os.sep), "(*.srt)"
+        )
         if srtFilename != "":
             self.workSA.hide()
             self.addSubtitleBTN.hide()
@@ -160,11 +177,17 @@ class MainWindow(QMainWindow):
             self.showWaveformAction.setText("Hide Audio Waveform")
 
     def resizeEvent(self, QResizeEvent):
-        self.subtitle.move(self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
-                           self.vidContainer.height() - self.subtitle.height())
+        self.subtitle.move(
+            self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
+            self.vidContainer.height() - self.subtitle.height(),
+        )
 
     def eventFilter(self, source, event):
-        if event.type() == QEvent.Type.KeyPress and self.video.path is not None and source is self:
+        if (
+            event.type() == QEvent.Type.KeyPress
+            and self.video.path is not None
+            and source is self
+        ):
             if event.key() == Qt.Key.Key_Space:
                 self.topControl.playPauseAction()
             elif event.key() == Qt.Key.Key_Right:

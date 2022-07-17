@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 import os
 
+
 class ExportWidget(QWidget):
     subtitleList = None
     exportPath = None
@@ -39,7 +40,9 @@ class ExportWidget(QWidget):
         self.show()
 
     def selectPath(self):
-        filename = QFileDialog.getExistingDirectory(self, "Select Export Directory", os.path.abspath(os.sep))
+        filename = QFileDialog.getExistingDirectory(
+            self, "Select Export Directory", os.path.abspath(os.sep)
+        )
         if filename != "":
             self.locationBTN.setText(filename)
             self.exportPath = filename
@@ -52,10 +55,12 @@ class ExportWidget(QWidget):
         else:
             outputFile = open(self.exportPath + "/" + self.nameTB.text() + ".srt", "w")
             for x in range(0, len(self.subtitleList)):
-                lines = [str(x + 1) + "\n",
-                         self.subtitleList[x][0] + " --> " + self.subtitleList[x][1] + "\n",
-                         self.subtitleList[x][2] + "\n",
-                         "\n"]
+                lines = [
+                    str(x + 1) + "\n",
+                    self.subtitleList[x][0] + " --> " + self.subtitleList[x][1] + "\n",
+                    self.subtitleList[x][2] + "\n",
+                    "\n",
+                ]
                 outputFile.writelines(lines)
             outputFile.close()
             self.close()

@@ -4,6 +4,7 @@ from PyQt6.QtCore import *
 import time
 import re
 
+
 class ImportWidget(QWidget):
     path = None
     workPanel = None
@@ -30,12 +31,15 @@ class ImportWidget(QWidget):
         self.progressBar.setValue(0)
         self.progressBar.setMaximum(sum(1 for line in open(path)))
         self.importWorker = ImportSRTThread(path)
-        self.importWorker.incrementProgressBarSignal.connect(self.incrementProgressBarSlot, Qt.ConnectionType.BlockingQueuedConnection)
+        self.importWorker.incrementProgressBarSignal.connect(
+            self.incrementProgressBarSlot, Qt.ConnectionType.BlockingQueuedConnection
+        )
         self.importWorker.finishedImportSignal.connect(self.finishedImportSignal.emit)
         self.importWorker.start()
 
     def incrementProgressBarSlot(self):
         self.progressBar.setValue(self.progressBar.value() + 1)
+
 
 class ImportSRTThread(QThread):
     path = None
@@ -52,7 +56,9 @@ class ImportSRTThread(QThread):
 
         with open(self.path) as srtFile:
             prevLine = "number"
-            timestampPattern = re.compile("([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])([:,])\d{1,3} --> ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])([:,])\d{1,3}")
+            timestampPattern = re.compile(
+                "([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])([:,])\d{1,3} --> ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])([:,])\d{1,3}"
+            )
 
             item = []
 
@@ -72,7 +78,7 @@ class ImportSRTThread(QThread):
 
                 elif line == "\n":
                     prevLine = "number"
-                    
+
                     item[2] = item[2].rstrip()
 
                     data.append(item)
@@ -80,7 +86,7 @@ class ImportSRTThread(QThread):
                     item = []
 
                 self.incrementProgressBarSignal.emit()
-            
+
             if len(item) == 3:
                 item[2] = item[2].rstrip()
                 data.append(item)
@@ -88,17 +94,3 @@ class ImportSRTThread(QThread):
             self.finishedImportSignal.emit(data)
             srtFile.close()
             self.quit()
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -6,6 +6,7 @@ from PyQt6.QtCore import *
 import os
 import cv2
 
+
 class VideoWidget(QWidget):
     path = None
     mediaPlayer = None
@@ -14,7 +15,7 @@ class VideoWidget(QWidget):
 
     mediaLoadedSignal = pyqtSignal(str)
 
-    def __init__(self, timeline, path = None):
+    def __init__(self, timeline, path=None):
         super(VideoWidget, self).__init__()
         self.path = path
 
@@ -29,11 +30,6 @@ class VideoWidget(QWidget):
 
         self.videoItem = QGraphicsVideoItem()
         self.scene.addItem(self.videoItem)
-
-        self.subItem = QLabel("Hey There\npog")
-        self.subItem.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.subItem.setStyleSheet("color: white; background-color: black; font-size: 3px;")
-        self.scene.addWidget(self.subItem)
 
         self.mediaPlayer = QMediaPlayer(None)
 
@@ -77,12 +73,10 @@ class VideoWidget(QWidget):
         self.view.resize(self.size())
 
         self.resize(100, 100)
-    
+
     def resizeEvent(self, QResizeEvent):
         self.view.resize(self.size())
         videoRect = self.videoItem.boundingRect()
-        self.subItem.move(videoRect.x() + (videoRect.width() / 2) - (self.subItem.width() / 2), 
-						  videoRect.y() + videoRect.height() - self.subItem.height())
 
         rect = self.videoItem.boundingRect()
 
@@ -90,14 +84,16 @@ class VideoWidget(QWidget):
 
     def mousePressEvent(self, QMouseEvent):
         if self.path is None:
-            self.path, _ = QFileDialog.getOpenFileName(self,
-                                                    "Open Video File",
-                                                    os.path.abspath(os.sep),
-                                                    "Video files (*.mp4 *.mkv *.mov *.wmv)")
+            self.path, _ = QFileDialog.getOpenFileName(
+                self,
+                "Open Video File",
+                os.path.abspath(os.sep),
+                "Video files (*.mp4 *.mkv *.mov *.wmv)",
+            )
             if self.path:
                 self.initVideo()
             else:
-                 self.path = None
+                self.path = None
 
     def dragEnterEvent(self, event):
         self.setStyleSheet("border: 1px solid black")
