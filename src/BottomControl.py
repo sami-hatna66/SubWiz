@@ -1,6 +1,7 @@
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
+from operator import itemgetter
 
 
 class BottomControl(QWidget):
@@ -74,6 +75,11 @@ class BottomControl(QWidget):
             self.workPanel.subtitleTable.clearSelection()
             self.workPanel.subtitleTable.selectRow(index.row())
 
+            targetId = self.workPanel.subtitleList[index.row()][3]
+            self.workPanel.sortedSubtitleList[list(v[3] == targetId for v in self.workPanel.sortedSubtitleList).index(True)][0] = self.video.mediaPlayer.position()
+            self.workPanel.sortedSubtitleList = sorted(self.workPanel.sortedSubtitleList, key=itemgetter(0))
+
+
     def markEndTime(self):
         for index in self.workPanel.subtitleTable.selectionModel().selectedRows():
             self.workPanel.subtitleList[index.row()][1] = str(
@@ -84,3 +90,7 @@ class BottomControl(QWidget):
             )
             self.workPanel.subtitleTable.clearSelection()
             self.workPanel.subtitleTable.selectRow(index.row())
+
+            targetId = self.workPanel.subtitleList[index.row()][3]
+            self.workPanel.sortedSubtitleList[list(v[3] == targetId for v in self.workPanel.sortedSubtitleList).index(True)][1] = self.video.mediaPlayer.position()
+

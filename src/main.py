@@ -11,6 +11,8 @@ from WaveformWidget import WaveformWidget
 from ExportWidget import ExportWidget
 from ImportWidget import ImportWidget
 import sys
+from operator import itemgetter
+from datetime import datetime
 
 
 class MainWindow(QMainWindow):
@@ -139,10 +141,10 @@ class MainWindow(QMainWindow):
             self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
             self.vidContainer.height() - self.subtitle.height() - 5,
         )
-
+        
         # ---------------------------------------------------------------------------------------------------------------
-        self.video.initVideo()
         self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
+        self.video.initVideo()
         # ---------------------------------------------------------------------------------------------------------------
 
     def importSRT(self):
@@ -158,8 +160,32 @@ class MainWindow(QMainWindow):
 
     def finishedImportSlot(self, newList):
         self.workPanel.subtitleList.clear()
+        self.workPanel.sortedSubtitleList.clear()
         for sub in newList:
+            sub.append(self.workPanel.idCounter)
             self.workPanel.subtitleList.append(sub)
+
+            start = sub[0]
+            end = sub[1]
+            if "." not in start:
+                start += ".00"
+            if "." not in end:
+                end += ".00"
+            start = (
+                datetime.strptime(start, "%H:%M:%S.%f")
+                - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
+            ).total_seconds()
+            end = (
+                datetime.strptime(end, "%H:%M:%S.%f")
+                - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
+            ).total_seconds()
+
+            self.workPanel.sortedSubtitleList.append([start, end, sub[2], self.workPanel.idCounter])
+            self.workPanel.idCounter += 1
+
+        print(self.workPanel.subtitleList)
+        print(self.workPanel.sortedSubtitleList)
+        self.workPanel.sortedSubtitleList = sorted(self.workPanel.sortedSubtitleList, key=itemgetter(0))
         self.workPanel.subtitleModel.layoutChanged.emit()
         self.workPanel.subtitleTable.changeRowHeights()
         self.importPanel.hide()
