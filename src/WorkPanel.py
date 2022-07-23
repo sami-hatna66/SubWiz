@@ -97,9 +97,13 @@ class SubtitleTableModel(QAbstractTableModel):
                     ][index.column()] = timeCount
                     if index.column() == 0:
                         self.sortedDataStore.sort(key=itemgetter(0), reverse=False)
-                    print("Edit")
-                    print(self.sortedDataStore)
-                    self.transmitSortedDataStore.emit(self.sortedDataStore)
+                else:
+                    self.receiveStoredDataStore.emit()
+                    targetId = self.dataStore[index.row()][3]
+                    self.sortedDataStore[
+                        list(v[3] == targetId for v in self.sortedDataStore).index(True)
+                    ][index.column()] = value
+                self.transmitSortedDataStore.emit(self.sortedDataStore)
 
             return True
 
@@ -233,9 +237,7 @@ class WorkPanel(QWidget):
         self.subtitleTable.setColumnWidth(1, self.subtitleTable.columnWidth(1) + 10)
 
     def reassignSortedData(self, newSortedData):
-        print("signal")
         self.sortedSubtitleList = newSortedData
-        print(self.sortedSubtitleList)
 
     def passSortedDataToModel(self):
         self.subtitleModel.sortedDataStore = self.sortedSubtitleList
@@ -249,14 +251,13 @@ class WorkPanel(QWidget):
             if sub[0] <= sub[1]:
                 if sub[0] <= pos <= sub[1]:
                     self.subtitle.setText(sub[2])
-                    self.subtitle.adjustSize()
                     self.subtitle.show()
+                    self.subtitle.adjustSize()
                     changed = True
                     self.subtitle.move(
                         self.video.width() / 2 - (self.subtitle.width() / 2),
-                        self.video.height() - self.subtitle.height() - 5,
+                        self.video.height() - self.subtitle.height() - 5
                     )
-                    self.subtitle.raise_()
                     break
         if not changed:
             self.subtitle.hide()
@@ -269,8 +270,8 @@ class WorkPanel(QWidget):
         self.idCounter += 1
         self.subtitleModel.layoutChanged.emit()
         self.subtitleTable.changeRowHeights()
-        print("Add")
-        print(self.sortedSubtitleList)
+
+        self.timeline.update()
 
     def deleteSubtitle(self):
         rows = []
@@ -286,5 +287,5 @@ class WorkPanel(QWidget):
             ]
         self.subtitleModel.layoutChanged.emit()
         self.subtitleTable.changeRowHeights()
-        print("delete")
-        print(self.sortedSubtitleList)
+
+        self.timeline.update()
