@@ -1,7 +1,6 @@
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
-import math
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 from datetime import datetime
 from WorkPanel import validateTimestampFormat
 
@@ -62,14 +61,14 @@ class Timeline(QWidget):
         return (pos / self.scale) * 1000
 
     def mousePressEvent(self, QMouseEvent):
-        self.setPlayheadPos(self.posToTime(QMouseEvent.position().x()))
+        self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
         self.update()
         self.playheadChangedSignal.emit(self.playheadPos, self.scale)
         self.clicking = True
 
     def mouseMoveEvent(self, QMouseEvent):
         if self.clicking:
-            self.setPlayheadPos(self.posToTime(QMouseEvent.position().x()))
+            self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
             self.update()
             self.playheadChangedSignal.emit(self.playheadPos, self.scale)
 

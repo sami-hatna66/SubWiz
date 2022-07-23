@@ -1,7 +1,7 @@
 import os.path
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 from VideoWidget import VideoWidget
 from Timeline import Timeline
 from TopControl import TopControl
@@ -180,7 +180,7 @@ class MainWindow(QMainWindow):
                 - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
             ).total_seconds()
 
-            self.workPanel.sortedSubtitleList.append([start, end, sub[2], self.workPanel.idCounter])
+            self.workPanel.sortedSubtitleList.append([start * 1000, end * 1000, sub[2], self.workPanel.idCounter])
             self.workPanel.idCounter += 1
 
         print(self.workPanel.subtitleList)

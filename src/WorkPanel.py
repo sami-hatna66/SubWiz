@@ -1,7 +1,7 @@
 from os import times
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 import re
 from datetime import datetime
 import time
@@ -233,8 +233,11 @@ class WorkPanel(QWidget):
     def subSearch(self, pos):  # milliseconds
         changed = False
         for sub in self.sortedSubtitleList:
+            if sub[0] > pos and sub[1] > pos:
+                self.subtitle.hide()
+                break 
             if sub[0] <= sub[1]:
-                if sub[0] <= pos / 1000 <= sub[1]:
+                if sub[0] <= pos <= sub[1]:
                     self.subtitle.setText(sub[2])
                     self.subtitle.adjustSize()
                     self.subtitle.show()

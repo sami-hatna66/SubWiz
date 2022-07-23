@@ -1,13 +1,13 @@
-from PyQt6.QtMultimedia import QMediaPlayer
-from PyQt6.QtMultimediaWidgets import QGraphicsVideoItem
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtMultimediaWidgets import QVideoWidget
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 import os
 import cv2
 
 
-class VideoWidget(QWidget):
+class VideoWidget(QVideoWidget):
     path = None
     mediaPlayer = None
     placeholderLBL = None
@@ -20,17 +20,6 @@ class VideoWidget(QWidget):
         self.path = path
 
         self.placeholderLBL = QLabel("Drag file or click", self)
-
-        self.scene = QGraphicsScene()
-        self.view = QGraphicsView(self.scene, self)
-        self.view.setBackgroundBrush(QBrush(Qt.GlobalColor.black))
-        self.view.setEnabled(False)
-        self.view.hide()
-        self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-
-        self.videoItem = QGraphicsVideoItem()
-        self.scene.addItem(self.videoItem)
 
         self.mediaPlayer = QMediaPlayer(None)
 
@@ -60,20 +49,14 @@ class VideoWidget(QWidget):
 
     def initVideo(self):
         self.placeholderLBL.setParent(None)
-        self.mediaPlayer.setVideoOutput(self.videoItem)
-        self.mediaPlayer.setSource(QUrl.fromLocalFile(self.path))
+        self.mediaPlayer.setVideoOutput(self)
+        self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.path)))
         self.mediaPlayer.play()
         self.timeline.duration = self.getDuration()
         self.timeline.setFixedWidth(self.timeline.duration * self.timeline.scale)
         self.mediaPlayer.positionChanged.connect(self.timeline.setPlayheadPos)
         self.timeline.update()
         self.mediaLoadedSignal.emit(self.path)
-
-        self.videoItem.setSize(self.videoItem.size())
-        self.view.show()
-        self.view.resize(self.size())
-
-        self.resize(100, 100)
     
     def selectVideo(self):
         self.path, _ = QFileDialog.getOpenFileName(
@@ -84,14 +67,6 @@ class VideoWidget(QWidget):
         )
         if self.path:
             self.initVideo()
-
-    def resizeEvent(self, QResizeEvent):
-        self.view.resize(self.size())
-        videoRect = self.videoItem.boundingRect()
-
-        rect = self.videoItem.boundingRect()
-
-        self.view.fitInView(rect, Qt.AspectRatioMode.KeepAspectRatio)
 
     def mousePressEvent(self, QMouseEvent):
         if self.path is None:
