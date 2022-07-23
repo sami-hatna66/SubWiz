@@ -80,7 +80,9 @@ class SubtitleTableModel(QAbstractTableModel):
                 self.dataStore[index.row()][index.column()] = value
                 self.refreshRowHeights.emit()
 
-                if index.column() < 2 and validateTimestampFormat(self.dataStore[index.row()][index.column()]):
+                if index.column() < 2 and validateTimestampFormat(
+                    self.dataStore[index.row()][index.column()]
+                ):
                     self.receiveStoredDataStore.emit()
                     timestamp = self.dataStore[index.row()][index.column()]
                     if "." not in timestamp:
@@ -90,7 +92,9 @@ class SubtitleTableModel(QAbstractTableModel):
                         - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
                     ).total_seconds()
                     targetId = self.dataStore[index.row()][3]
-                    self.sortedDataStore[list(v[3] == targetId for v in self.sortedDataStore).index(True)][index.column()] = timeCount
+                    self.sortedDataStore[
+                        list(v[3] == targetId for v in self.sortedDataStore).index(True)
+                    ][index.column()] = timeCount
                     if index.column() == 0:
                         self.sortedDataStore.sort(key=itemgetter(0), reverse=False)
                     print("Edit")
@@ -202,17 +206,23 @@ class WorkPanel(QWidget):
         self.subtitleTable.setItemDelegateForColumn(2, self.bodyDelegate)
 
         # start, end, body
-        self.subtitleList = [["00:00:00.000", "00:00:00.000", "Welcome to Subwiz!", self.idCounter]]
+        self.subtitleList = [
+            ["00:00:00.000", "00:00:00.000", "Welcome to Subwiz!", self.idCounter]
+        ]
         self.sortedSubtitleList = [[0, 0, "Welcome to Subwiz!", self.idCounter]]
         self.idCounter += 1
 
-        self.subtitleModel = SubtitleTableModel(self.subtitleList, self.sortedSubtitleList)
+        self.subtitleModel = SubtitleTableModel(
+            self.subtitleList, self.sortedSubtitleList
+        )
         self.subtitleTable.setModel(self.subtitleModel)
         self.subtitleModel.refreshRowHeights.connect(
             self.subtitleTable.changeRowHeights
         )
         self.subtitleModel.transmitSortedDataStore.connect(self.reassignSortedData)
-        self.subtitleModel.receiveStoredDataStore.connect(self.passSortedDataToModel, Qt.ConnectionType.DirectConnection)
+        self.subtitleModel.receiveStoredDataStore.connect(
+            self.passSortedDataToModel, Qt.ConnectionType.DirectConnection
+        )
         self.subtitleTable.changeRowHeights()
 
         self.layout.addWidget(self.subtitleTable)
@@ -226,7 +236,7 @@ class WorkPanel(QWidget):
         print("signal")
         self.sortedSubtitleList = newSortedData
         print(self.sortedSubtitleList)
-    
+
     def passSortedDataToModel(self):
         self.subtitleModel.sortedDataStore = self.sortedSubtitleList
 
@@ -235,7 +245,7 @@ class WorkPanel(QWidget):
         for sub in self.sortedSubtitleList:
             if sub[0] > pos and sub[1] > pos:
                 self.subtitle.hide()
-                break 
+                break
             if sub[0] <= sub[1]:
                 if sub[0] <= pos <= sub[1]:
                     self.subtitle.setText(sub[2])
@@ -271,7 +281,9 @@ class WorkPanel(QWidget):
         for row in sorted(rows, reverse=True):
             del self.subtitleList[row]
         for id in deletedIds:
-            self.sortedSubtitleList = [v for v in self.sortedSubtitleList if v[3] not in deletedIds]
+            self.sortedSubtitleList = [
+                v for v in self.sortedSubtitleList if v[3] not in deletedIds
+            ]
         self.subtitleModel.layoutChanged.emit()
         self.subtitleTable.changeRowHeights()
         print("delete")

@@ -141,7 +141,7 @@ class MainWindow(QMainWindow):
             self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
             self.vidContainer.height() - self.subtitle.height() - 5,
         )
-        
+
         # ---------------------------------------------------------------------------------------------------------------
         self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
         self.video.initVideo()
@@ -180,12 +180,16 @@ class MainWindow(QMainWindow):
                 - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
             ).total_seconds()
 
-            self.workPanel.sortedSubtitleList.append([start * 1000, end * 1000, sub[2], self.workPanel.idCounter])
+            self.workPanel.sortedSubtitleList.append(
+                [start * 1000, end * 1000, sub[2], self.workPanel.idCounter]
+            )
             self.workPanel.idCounter += 1
 
         print(self.workPanel.subtitleList)
         print(self.workPanel.sortedSubtitleList)
-        self.workPanel.sortedSubtitleList = sorted(self.workPanel.sortedSubtitleList, key=itemgetter(0))
+        self.workPanel.sortedSubtitleList = sorted(
+            self.workPanel.sortedSubtitleList, key=itemgetter(0)
+        )
         self.workPanel.subtitleModel.layoutChanged.emit()
         self.workPanel.subtitleTable.changeRowHeights()
         self.importPanel.hide()

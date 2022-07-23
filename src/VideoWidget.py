@@ -57,7 +57,7 @@ class VideoWidget(QVideoWidget):
         self.mediaPlayer.positionChanged.connect(self.timeline.setPlayheadPos)
         self.timeline.update()
         self.mediaLoadedSignal.emit(self.path)
-    
+
     def selectVideo(self):
         self.path, _ = QFileDialog.getOpenFileName(
             self,
