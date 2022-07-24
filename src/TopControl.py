@@ -140,3 +140,4 @@ class SpeedWidget(QWidget):
             self.videoInstance.mediaPlayer.setPlaybackRate(
                 self.speedList[self.activeButtonIndex]
             )
+            self.videoInstance.mediaPlayer.setNotifyInterval(self.speedList[self.activeButtonIndex])

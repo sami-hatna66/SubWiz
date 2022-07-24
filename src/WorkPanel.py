@@ -54,6 +54,7 @@ class SubtitleTableModel(QAbstractTableModel):
     refreshRowHeights = pyqtSignal()
     receiveStoredDataStore = pyqtSignal()
     transmitSortedDataStore = pyqtSignal(list)
+    refreshTimeline = pyqtSignal()
 
     def __init__(self, data, sortedData):
         super(SubtitleTableModel, self).__init__()
@@ -94,9 +95,10 @@ class SubtitleTableModel(QAbstractTableModel):
                     targetId = self.dataStore[index.row()][3]
                     self.sortedDataStore[
                         list(v[3] == targetId for v in self.sortedDataStore).index(True)
-                    ][index.column()] = timeCount
+                    ][index.column()] = timeCount * 1000
                     if index.column() == 0:
                         self.sortedDataStore.sort(key=itemgetter(0), reverse=False)
+                    self.refreshTimeline.emit()
                 else:
                     self.receiveStoredDataStore.emit()
                     targetId = self.dataStore[index.row()][3]
@@ -227,6 +229,7 @@ class WorkPanel(QWidget):
         self.subtitleModel.receiveStoredDataStore.connect(
             self.passSortedDataToModel, Qt.ConnectionType.DirectConnection
         )
+        self.subtitleModel.refreshTimeline.connect(self.timeline.update)
         self.subtitleTable.changeRowHeights()
 
         self.layout.addWidget(self.subtitleTable)
