@@ -95,7 +95,7 @@ class SubtitleTableModel(QAbstractTableModel):
                     targetId = self.dataStore[index.row()][3]
                     self.sortedDataStore[
                         list(v[3] == targetId for v in self.sortedDataStore).index(True)
-                    ][index.column()] = timeCount * 1000
+                    ][index.column()] = (timeCount * 1000)
                     if index.column() == 0:
                         self.sortedDataStore.sort(key=itemgetter(0), reverse=False)
                     self.refreshTimeline.emit()
@@ -259,7 +259,7 @@ class WorkPanel(QWidget):
                     changed = True
                     self.subtitle.move(
                         self.video.width() / 2 - (self.subtitle.width() / 2),
-                        self.video.height() - self.subtitle.height() - 5
+                        self.video.height() - self.subtitle.height() - 5,
                     )
                     break
         if not changed:

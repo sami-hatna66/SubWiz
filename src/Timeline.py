@@ -119,6 +119,13 @@ class Timeline(QWidget):
         colours = ["#FFFF00", "#0033CC", "#FF9900", "#00CC00", "#660099"]
         colourIndex = 0
 
+        visibleRegion = self.visibleRegion().boundingRect()
+        print(visibleRegion.x())
+        print(visibleRegion.y())
+        print(visibleRegion.width())
+        print(visibleRegion.height())
+        print("\n")
+
         if self.subtitleList is not None:
             count = 0
             for sub in self.subtitleList:
@@ -139,7 +146,18 @@ class Timeline(QWidget):
                         datetime.strptime(end, "%H:%M:%S.%f")
                         - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
                     ).total_seconds()
-                    if start != end:
+                    if start != end and (
+                        (
+                            visibleRegion.x() - 50
+                            <= start * self.scale
+                            <= visibleRegion.x() + visibleRegion.width() + 50
+                        )
+                        or (
+                            visibleRegion.x() - 50
+                            <= end * self.y()
+                            <= visibleRegion.x() + visibleRegion.width() + 50
+                        )
+                    ):
                         data.append([start, end, count])
                 count += 1
 
