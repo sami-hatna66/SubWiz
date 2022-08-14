@@ -2,6 +2,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import os
+from WorkPanel import validateTimestampFormat
 
 
 class ExportWidget(QWidget):
@@ -55,12 +56,13 @@ class ExportWidget(QWidget):
         else:
             outputFile = open(self.exportPath + "/" + self.nameTB.text() + ".srt", "w")
             for x in range(0, len(self.subtitleList)):
-                lines = [
-                    str(x + 1) + "\n",
-                    self.subtitleList[x][0] + " --> " + self.subtitleList[x][1] + "\n",
-                    self.subtitleList[x][2] + "\n",
-                    "\n",
-                ]
-                outputFile.writelines(lines)
+                if (not self.filterErrors.isChecked()) or (validateTimestampFormat(self.subtitleList[x][0]) and validateTimestampFormat(self.subtitleList[x][1])):
+                    lines = [
+                        str(x + 1) + "\n",
+                        self.subtitleList[x][0] + " --> " + self.subtitleList[x][1] + "\n",
+                        self.subtitleList[x][2] + "\n",
+                        "\n",
+                    ]
+                    outputFile.writelines(lines)
             outputFile.close()
             self.close()

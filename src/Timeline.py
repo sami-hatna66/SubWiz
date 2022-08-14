@@ -61,6 +61,7 @@ class Timeline(QWidget):
         return (pos / self.scale) * 1000
 
     def mousePressEvent(self, QMouseEvent):
+        print(QMouseEvent.x())
         self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
         self.update()
         self.playheadChangedSignal.emit(self.playheadPos, self.scale)
@@ -120,7 +121,6 @@ class Timeline(QWidget):
         colourIndex = 0
 
         visibleRegion = self.visibleRegion().boundingRect()
-        print(len(self.subtitleList))
 
         if self.subtitleList is not None:
             count = 0
