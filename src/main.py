@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
         )
         self.workPanel.subtitleTable.leftSignal.connect(lambda: self.topControl.back(1))
 
-        self.timeline.passInSubtitles(self.workPanel.subtitleList)
+        self.timeline.passInSubtitles(self.workPanel.sortedSubtitleList)
 
         self.bottomControl = BottomControl(
             self.video,
@@ -192,6 +192,7 @@ class MainWindow(QMainWindow):
         self.importPanel.hide()
         self.workSA.show()
         self.addSubtitleBTN.show()
+        self.timeline.passInSubtitles(self.workPanel.sortedSubtitleList)
         self.timeline.update()
 
     def exportSRT(self):

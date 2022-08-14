@@ -120,32 +120,14 @@ class Timeline(QWidget):
         colourIndex = 0
 
         visibleRegion = self.visibleRegion().boundingRect()
-        print(visibleRegion.x())
-        print(visibleRegion.y())
-        print(visibleRegion.width())
-        print(visibleRegion.height())
-        print("\n")
+        print(len(self.subtitleList))
 
         if self.subtitleList is not None:
             count = 0
             for sub in self.subtitleList:
-                test1 = validateTimestampFormat(sub[0])
-                test2 = validateTimestampFormat(sub[1])
-                if test1 and test2:
-                    start = sub[0]
-                    end = sub[1]
-                    if "." not in start:
-                        start += ".00"
-                    if "." not in end:
-                        end += ".00"
-                    start = (
-                        datetime.strptime(start, "%H:%M:%S.%f")
-                        - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
-                    ).total_seconds()
-                    end = (
-                        datetime.strptime(end, "%H:%M:%S.%f")
-                        - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
-                    ).total_seconds()
+                if sub[0] != None and sub[1] != None:
+                    start = sub[0] / 1000
+                    end = sub[1] / 1000
                     if start != end and (
                         (
                             visibleRegion.x() - 50
@@ -159,7 +141,7 @@ class Timeline(QWidget):
                         )
                     ):
                         data.append([start, end, count])
-                count += 1
+                    count += 1
 
             for val in data:
                 predicate = lambda d: d[1] <= val[0] and d[0] < val[0]
