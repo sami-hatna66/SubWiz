@@ -14,6 +14,7 @@ class Timeline(QWidget):
     playheadPos = 0
 
     subtitleList = None
+    unsortedSubtitleList = None
 
     playheadChangedSignal = pyqtSignal(int, float)
 
@@ -26,8 +27,9 @@ class Timeline(QWidget):
 
         self.show()
 
-    def passInSubtitles(self, subtitleList):
+    def passInSubtitles(self, subtitleList, unsortedSubtitleList):
         self.subtitleList = subtitleList
+        self.unsortedSubtitleList = unsortedSubtitleList
 
     def zoomIn(self):
         if self.scaleIndex < len(self.scaleList) - 1:
@@ -61,7 +63,6 @@ class Timeline(QWidget):
         return (pos / self.scale) * 1000
 
     def mousePressEvent(self, QMouseEvent):
-        print(QMouseEvent.x())
         self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
         self.update()
         self.playheadChangedSignal.emit(self.playheadPos, self.scale)
@@ -140,7 +141,7 @@ class Timeline(QWidget):
                             <= visibleRegion.x() + visibleRegion.width() + 50
                         )
                     ):
-                        data.append([start, end, count])
+                        data.append([start, end, count, sub[3]])
                     count += 1
 
             for val in data:
@@ -157,6 +158,7 @@ class Timeline(QWidget):
                 start = lanesData[x][0][0]
                 end = lanesData[x][0][1]
                 num = lanesData[x][0][2]
+                id = lanesData[x][0][3]
                 lane = lanesData[x][1]
                 painter.setPen(QPen(QColor(colours[colourIndex])))
                 painter.setBrush(QBrush(QColor(colours[colourIndex])))
@@ -169,8 +171,9 @@ class Timeline(QWidget):
                 font.setPointSize(15)
                 painter.setFont(font)
                 if self.scaleIndex > 4:
+                    target = list(v[3] == id for v in self.unsortedSubtitleList).index(True)
                     painter.drawText(
-                        start * self.scale + 5, 75 + (lane * 30), str(num + 1)
+                        start * self.scale + 5, 75 + (lane * 30), str(target + 1)
                     )
 
         painter.setPen(QPen(Qt.GlobalColor.black))

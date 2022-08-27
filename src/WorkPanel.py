@@ -248,7 +248,7 @@ class WorkPanel(QWidget):
 
     def reassignSortedData(self, newSortedData):
         self.sortedSubtitleList = newSortedData
-        self.timeline.passInSubtitles(newSortedData)
+        self.timeline.passInSubtitles(newSortedData, self.subtitleList)
 
     def passSortedDataToModel(self):
         self.subtitleModel.sortedDataStore = self.sortedSubtitleList
