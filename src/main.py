@@ -44,6 +44,8 @@ class MainWindow(QMainWindow):
         self.timelineSA.setFixedHeight(210)
         self.timelineSA.setWidget(self.timeline)
         self.timelineSA.horizontalScrollBar().valueChanged.connect(self.timeline.update)
+        self.timelineSA.verticalScrollBar().setEnabled(False)
+        self.timelineSA.verticalScrollBar().setStyleSheet("QScrollBar { height:0px; }")
         self.videoTimelineVBL.addWidget(self.timelineSA)
 
         self.subtitle = QLabel("", self.vidContainer)
@@ -58,6 +60,7 @@ class MainWindow(QMainWindow):
         self.workPanel.subtitleTable.rightSignal.connect(
             lambda: self.topControl.forward(1)
         )
+        self.workPanel.adjustSubtitle.connect(self.adjustSubtitle)
         self.workPanel.subtitleTable.leftSignal.connect(lambda: self.topControl.back(1))
 
         self.timeline.passInSubtitles(self.workPanel.sortedSubtitleList, self.workPanel.subtitleList)
@@ -205,12 +208,15 @@ class MainWindow(QMainWindow):
         else:
             self.waveformSA.show()
             self.showWaveformAction.setText("Hide Audio Waveform")
-
-    def resizeEvent(self, QResizeEvent):
+    
+    def adjustSubtitle(self):
         self.subtitle.move(
             self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
-            self.vidContainer.height() - self.subtitle.height(),
+            self.vidContainer.height() - self.subtitle.height() - 5,
         )
+
+    def resizeEvent(self, QResizeEvent):
+        self.adjustSubtitle()
 
     def eventFilter(self, source, event):
         if (
@@ -235,6 +241,9 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(os.path.join(os.getcwd(), "assets", "SubwizIcon.png")))
     root = MainWindow()
+    with open(os.path.join(os.getcwd(), "stylesheet", "stylesheet.css"), "r") as ss:
+        root.setStyleSheet(ss.read())
     root.show()
     sys.exit(app.exec())

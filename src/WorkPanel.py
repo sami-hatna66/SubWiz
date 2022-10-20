@@ -193,6 +193,8 @@ class WorkPanel(QWidget):
 
     subtitleList = []
 
+    adjustSubtitle = pyqtSignal()
+
     def __init__(self, subtitle, video, timeline):
         super(WorkPanel, self).__init__()
 
@@ -256,20 +258,19 @@ class WorkPanel(QWidget):
     def subSearch(self, pos):  # milliseconds
         changed = False
         for sub in self.sortedSubtitleList:
-            if sub[0] != None and sub[1] != None:
-                if sub[0] > pos and sub[1] > pos:
+            start = sub[0]
+            end = sub[1]
+            if start != None and end != None:
+                if start > pos and end > pos:
                     self.subtitle.hide()
                     break
-                if sub[0] <= sub[1]:
-                    if sub[0] <= pos <= sub[1]:
+                if start <= end:
+                    if start <= pos <= end:
                         self.subtitle.setText(sub[2])
                         self.subtitle.show()
                         self.subtitle.adjustSize()
                         changed = True
-                        self.subtitle.move(
-                            self.video.width() / 2 - (self.subtitle.width() / 2),
-                            self.video.height() - self.subtitle.height() - 5,
-                        )
+                        self.adjustSubtitle.emit()
                         break
         if not changed:
             self.subtitle.hide()

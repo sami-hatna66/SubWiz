@@ -12,6 +12,7 @@ class VideoWidget(QVideoWidget):
     mediaPlayer = None
     placeholderLBL = None
     timeline = None
+    vCap = None
 
     mediaLoadedSignal = pyqtSignal(str)
 
@@ -36,9 +37,8 @@ class VideoWidget(QVideoWidget):
 
     def getDuration(self):
         if self.path is not None:
-            vCap = cv2.VideoCapture(self.path)
-            fps = vCap.get(cv2.CAP_PROP_FPS)
-            frameTotal = vCap.get(cv2.CAP_PROP_FRAME_COUNT)
+            fps = self.vCap.get(cv2.CAP_PROP_FPS)
+            frameTotal = self.vCap.get(cv2.CAP_PROP_FRAME_COUNT)
             duration = float(frameTotal) / float(fps)
             return duration
         else:
@@ -48,6 +48,7 @@ class VideoWidget(QVideoWidget):
         self.path = newPath
 
     def initVideo(self):
+        self.vCap = cv2.VideoCapture(self.path)
         self.placeholderLBL.setParent(None)
         self.mediaPlayer.setVideoOutput(self)
         self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.path)))
@@ -57,6 +58,23 @@ class VideoWidget(QVideoWidget):
         self.mediaPlayer.positionChanged.connect(self.timeline.setPlayheadPos)
         self.timeline.update()
         self.mediaLoadedSignal.emit(self.path)
+        self.resizeEvent(QResizeEvent(QSize(0, 0), QSize(self.width(), self.height())))
+    
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        if self.vCap is not None:
+            videoWidth  = self.vCap.get(cv2.CAP_PROP_FRAME_WIDTH) 
+            videoHeight = self.vCap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            widgetWidth = self.width()
+            widgetHeight = self.height()
+            if widgetWidth > widgetHeight:
+                ratio = widgetWidth / videoWidth
+                self.setFixedHeight(ratio * videoHeight)
+            else:
+                ratio = widgetHeight / videoHeight
+                self.setFixedWidth(ratio * videoWidth)
+
+
+        return super().resizeEvent(event)
 
     def selectVideo(self):
         self.path, _ = QFileDialog.getOpenFileName(

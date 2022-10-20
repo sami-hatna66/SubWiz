@@ -94,16 +94,6 @@ class TopControl(QWidget):
             str(timedelta(seconds=newTime / 1000)).split(".")[0] + " / " + self.duration
         )
 
-    def changeSpeed(self):
-        self.buttonList[self.activeButtonIndex].setStyleSheet("color: black;")
-        self.activeButtonIndex = self.buttonList.index(self.sender())
-        self.buttonList[self.activeButtonIndex].setStyleSheet("color: red;")
-        if self.videoInstance.path is not None:
-            self.videoInstance.mediaPlayer.setPlaybackRate(
-                self.speedList[self.activeButtonIndex]
-            )
-
-
 class SpeedWidget(QWidget):
     videoInstance = None
 
@@ -133,7 +123,7 @@ class SpeedWidget(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
 
     def changeSpeed(self):
-        self.buttonList[self.activeButtonIndex].setStyleSheet("color: black;")
+        self.buttonList[self.activeButtonIndex].setStyleSheet("color: white;")
         self.activeButtonIndex = self.buttonList.index(self.sender())
         self.buttonList[self.activeButtonIndex].setStyleSheet("color: red;")
         if self.videoInstance.path is not None:

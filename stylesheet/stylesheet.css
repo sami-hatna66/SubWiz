@@ -1,0 +1,358 @@
+*{
+    background: #2E303E;
+    color: #000000;
+    border: 1px solid #212624;
+}
+
+QWidget#BorderlessWidget {
+    border: 0px;
+}
+
+QWidget::item:selected {
+        background: #D5E8D4;
+}
+
+QCheckBox, QRadioButton {
+        border: none;
+}
+
+QGroupBox {
+    margin-top: 6px;
+}
+
+QGroupBox::title {
+    top: -7px;
+    left: 7px;
+}
+
+QScrollBar {
+    border: 1px solid #5A5A5A;
+    background: #FFFFFF;
+}
+
+QScrollBar:horizontal {
+    height: 10px;
+    margin: 0px;
+}
+
+QScrollBar:vertical {
+    width: 10px;
+    margin: 0px;
+}
+QScrollBar::handle {
+    background: #D5E8D4;
+    border: 1px solid #5A5A5A;
+}
+
+QScrollBar::handle:horizontal {
+    border-width: 0px 1px 0px 1px;
+}
+
+QScrollBar::handle:vertical { 
+    border-width: 1px 0px 1px 0px;
+}
+
+QScrollBar::handle:horizontal { 
+    min-width: 20px;
+} 
+
+QScrollBar::handle:vertical {
+    min-height: 20px;
+}
+
+QScrollBar::add-line:horizontal { 
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QScrollBar::add-line:vertical { 
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QScrollBar::sub-line:horizontal { 
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QScrollBar::sub-line:vertical { 
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QScrollBar::add-page, QScrollBar::sub-page { 
+    background: none;
+    height: 0px;
+}
+
+QAbstractButton {
+    background: #9199be;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+QAbstractButton:hover {
+    background: #54678f;
+}
+
+QAbstractButton:pressed {
+    background: #2f394e;
+}
+
+QAbstractItemView { 
+    show-decoration-selected: 1;
+    selection-background-color: #D5E8D4; 
+    selection-color: #D5E8D4; 
+    alternate-background-color: #D5E8D4;
+}
+
+QRadioButton::indicator, QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+} 
+
+QRadioButton::indicator::unchecked, QCheckBox::indicator::unchecked {
+    border: 1px solid #5A5A5A;
+    background: none;
+} 
+
+QRadioButton::indicator:unchecked:hover, QCheckBox::indicator:unchecked:hover {
+    border: 1px solid #000000;
+} 
+
+QRadioButton::indicator::checked, QCheckBox::indicator::checked {
+    border: 1px solid #5A5A5A;
+    background: #D5E8D4;
+}
+
+QHeaderView {
+        border: 1px solid #5A5A5A;
+        border-radius: 0px;
+        border-bottom: 0px;
+        border-left: 0px;
+        border-top: 0px;
+        font-size: 12pt;
+}
+
+QHeaderView::section {
+        background: #FFFFFF;
+        border: 1px solid #5A5A5A;
+        border-right: 0px;
+}
+
+QHeaderView#hHeader::section { 
+    border-top: 2px solid rgb(90,90,90);
+    border-right: 0px;
+    border-bottom: 2px solid rgb(90,90,90); font-weight: bold;
+    background: #D5E8D4;
+}
+
+QHeaderView#vHeader::section{ 
+    border-left: 0px; 
+    border-bottom: 0px;
+    border-right: 0px;
+    padding-top: 5px;
+}
+
+QTableView {
+    gridline-color: #5A5A5A;
+    selection-color: #D5E8D4; 
+    selection-background-color: #D5E8D4; 
+    border-top: 0px;
+    border-right: 0px;
+}
+
+QTableView QScrollBar {
+    border-bottom: 0px;
+}
+
+QTableView QTableCornerButton::section { 
+    background: white;
+}
+
+QTableWidget::item {
+    border-bottom: 1px solid #d6d9dc; 
+    padding-left: 5px;
+}
+
+QTableView::QScrollBar:vertical{ 
+    background: #FFFFFF; 
+    border-bottom: 0px; 
+    border-top: 0px;
+}
+
+QTabBar {
+    margin-left: 2px;
+}
+
+QTabBar::tab {
+    border-radius: 0px;
+    padding: 4px;
+    margin: 4px;
+}
+
+QTabBar::tab:selected {
+    background: #D5E8D4;
+}
+
+QAbstractSpinBox {
+    padding-right: 15px;
+}
+
+QAbstractSpinBox::up-button, QAbstractSpinBox::down- button {
+    border: 1px solid #5A5A5A;
+    background: #D5E8D4;
+    subcontrol-origin: border;
+}
+
+QAbstractSpinBox::up-arrow {
+    width: 7px;
+    height: 7px;
+    border: 0px solid #5A5A5A;
+}
+
+QAbstractSpinBox::down-arrow { 
+    width: 7px;
+    height: 7px;
+    border: 0px solid #5A5A5A;
+}
+
+QSlider {
+    border: none;
+}
+
+QSlider::groove:horizontal { 
+    border: 1px solid;
+    height: 2px;
+    margin: 0px;
+}
+
+QSlider::groove:vertical {
+    width: 5px;
+    margin: 0px 4px 0px 4px;
+}
+
+QSlider::handle {
+    border: 1px solid #5A5A5A;
+    background: #D5E8D4;
+}
+
+QSlider::handle:horizontal { 
+    width: 10px;
+    height: 40px;
+    margin: -5px 0px;
+}
+
+QSlider::handle:vertical {
+    height: 15px;
+    margin: 0px -4px 0px -4px;
+}
+
+QSlider::add-page:vertical, QSlider::sub-page:horizontal {
+    background: #D5E8D4;
+}
+
+QSlider::sub-page:vertical, QSlider::add-page:horizontal {
+    background: #FFFFFF;
+}
+
+QLabel {
+    border: none;
+    background-color: rgba(0,0,0,0%);
+    color: #FFFFFF;
+}
+
+QProgressBar {
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    width: 1px;
+    background-color: #D5E8D4;
+}
+
+QMenu::separator {
+        background: #D5E8D4;
+}
+
+QToolButton {
+    background: #D5E8D4
+}
+
+QComboBox::down-arrow {
+    border: 0px solid #5A5A5A;
+    background: #D5E8D4;
+    width: 7px;
+    height: 7px;
+}
+
+QComboBox::drop-down {
+    border: 1px solid #5A5A5A;
+    background: #D5E8D4;
+}
+
+QComboBox {
+    margin-top: 0px;
+    padding-left: 5px;
+    padding-bottom: 0px;
+}
+
+QCalendarWidget QToolButton {
+    height: 20px;
+    width: 150px;
+    color: black;
+    font-size: 14px;
+    icon-size: 30px, 30px;
+    background-color: #D5E8D4;
+    border-bottom: 0px;
+}
+
+QCalendarWidget QMenu {
+    width: 150px;
+    left: 20px;
+    color: black;
+    font-size: 14px;
+    background-color: #FFFFFF;
+}
+
+QCalendarWidget QSpinBox {
+    width: 110px;
+    font-size: 14px;
+    color: black;
+    background-color: #D5E8D4; 
+    selection-background-color: rgb(136, 136, 136); 
+    selection-color: rgb(255, 255, 255);
+}
+
+QCalendarWidget QWidget { 
+    alternate-background-color: #ECECEC;
+}
+
+QCalendarWidget QAbstractItemView:enabled { 
+    font-size: 14px;
+    color: black;
+    background-color: white; 
+    selection-background-color: #D5E8D4; 
+    selection-color: white;
+}
+
+QCalendarWidget QWidget#qt_calendar_navigationbar { 
+    background-color: #D5E8D4;
+    border-bottom: 0px;
+}
+
+QCalendarWidget QAbstractItemView:disabled{ 
+    color: #a9a9a9;
+}
+
+QMessageBox QPushButton { 
+    width: 80px;
+}
