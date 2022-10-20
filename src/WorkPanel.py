@@ -299,5 +299,6 @@ class WorkPanel(QWidget):
             ]
         self.subtitleModel.layoutChanged.emit()
         self.subtitleTable.changeRowHeights()
+        self.timeline.passInSubtitles(self.sortedSubtitleList, self.subtitleList)
 
         self.timeline.update()
