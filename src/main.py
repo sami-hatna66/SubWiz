@@ -1,5 +1,5 @@
 import os.path
-from PyQt5.QtGui import QIcon, QMouseEvent
+from PyQt5.QtGui import QIcon, QMouseEvent, QCloseEvent
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QWidget, QHBoxLayout, QScrollArea, QVBoxLayout, QLabel, QPushButton, QMenuBar, QAction, QFileDialog, QApplication, QLineEdit
 from PyQt5.QtCore import Qt, QEvent, QObject
 from VideoWidget import VideoWidget
@@ -271,6 +271,11 @@ class MainWindow(QMainWindow):
         if isinstance(focusedWidget, QLineEdit) or isinstance(focusedWidget, QTextEdit):
             focusedWidget.clearFocus()
         QMainWindow.mousePressEvent(self, event)
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        # Prevents segfault on close
+        self.waveformWidget.worker.quit()
+        return super().closeEvent(event)
 
 
 if __name__ == "__main__":

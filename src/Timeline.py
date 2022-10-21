@@ -33,7 +33,7 @@ class Timeline(QWidget):
 
     # Called by TopControl
     def zoomIn(self):
-        if self.scaleIndex < len(self.scaleList) - 1:
+        if self.duration is not None and self.scaleIndex < len(self.scaleList) - 1:
             intermediary = self.posToTime(self.playheadPos)
             self.scaleIndex += 1
             self.scale = self.scaleList[self.scaleIndex]
@@ -42,7 +42,7 @@ class Timeline(QWidget):
             self.update()
 
     def zoomOut(self):
-        if self.scaleIndex > 0:
+        if self.duration is not None and self.scaleIndex > 0:
             intermediary = self.posToTime(self.playheadPos)
             self.scaleIndex -= 1
             self.scale = self.scaleList[self.scaleIndex]
