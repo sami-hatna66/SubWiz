@@ -1,6 +1,6 @@
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtGui import QResizeEvent, QPixmap
+from PyQt5.QtGui import QResizeEvent, QPixmap, QMouseEvent, QDropEvent, QDragEnterEvent, QDragLeaveEvent, QDragMoveEvent
 from PyQt5.QtWidgets import QLabel, QFileDialog
 from PyQt5.QtCore import pyqtSignal, Qt, QUrl, QSize
 import os
@@ -107,23 +107,23 @@ class VideoWidget(QVideoWidget):
         if self.path:
             self.initVideo()
 
-    def mousePressEvent(self, QMouseEvent):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         if self.path is None:
             self.selectVideo()
 
     # Recognise objects being dragged in
-    def dragEnterEvent(self, event):
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         self.setStyleSheet("border: 1px solid white;")
         if event.mimeData().hasUrls:
             event.accept()
         else:
             event.ignore()
 
-    def dragLeaveEvent(self, event):
+    def dragLeaveEvent(self, event: QDragLeaveEvent) -> None:
         self.setStyleSheet("border: 0px;")
 
     # Recognise objects being dragged in
-    def dragMoveEvent(self, event):
+    def dragMoveEvent(self, event: QDragMoveEvent) -> None:
         if event.mimeData().hasUrls:
             event.setDropAction(Qt.DropAction.CopyAction)
             event.accept()
@@ -131,7 +131,7 @@ class VideoWidget(QVideoWidget):
             event.ignore()
 
     # Process files dropped in
-    def dropEvent(self, event):
+    def dropEvent(self, event: QDropEvent) -> None:
         if event.mimeData().hasUrls:
             event.setDropAction(Qt.DropAction.CopyAction)
             event.accept()

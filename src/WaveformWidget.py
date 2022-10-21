@@ -1,5 +1,5 @@
 import numpy as np
-from PyQt5.QtGui import QPainter, QPen, QColor
+from PyQt5.QtGui import QPainter, QPen, QColor, QPaintEvent
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from moviepy.editor import VideoFileClip
@@ -42,7 +42,7 @@ class WaveformWidget(QWidget):
             self.playheadPos = newPos / 1000
             self.repaint()
 
-    def paintEvent(self, QPaintEvent):
+    def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
         painter.begin(self)
 
@@ -74,7 +74,7 @@ class AudioDataWorker(QThread):
         self.path = path
 
     # Calculate amplitudes from video's audio data
-    def run(self):
+    def run(self) -> None:
         clip = VideoFileClip(self.path)
         # Adjust segment size returned by cut based on overall audio duration
         # Longer audios should have larger segments to reduce processing time
@@ -90,3 +90,5 @@ class AudioDataWorker(QThread):
         volumeList = [volume(cut(i)) for i in range(0, int(clip.audio.duration - 2))]
 
         self.completeSignal.emit(volumeList)
+
+        return super().run()

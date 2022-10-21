@@ -1,7 +1,7 @@
 import os.path
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QScrollArea, QVBoxLayout, QLabel, QPushButton, QMenuBar, QAction, QFileDialog, QApplication, QLineEdit
-from PyQt5.QtCore import Qt, QEvent, QTextEdit
+from PyQt5.QtGui import QIcon, QMouseEvent
+from PyQt5.QtWidgets import QMainWindow, QTextEdit, QWidget, QHBoxLayout, QScrollArea, QVBoxLayout, QLabel, QPushButton, QMenuBar, QAction, QFileDialog, QApplication, QLineEdit
+from PyQt5.QtCore import Qt, QEvent, QObject
 from VideoWidget import VideoWidget
 from Timeline import Timeline
 from TopControl import TopControl
@@ -252,7 +252,7 @@ class MainWindow(QMainWindow):
         self.adjustSubtitle()
 
     # If a video is loaded, space and arrow key presses should map to media control functions (unless a text box is active)
-    def eventFilter(self, source, event):
+    def eventFilter(self, source: 'QObject', event: 'QEvent') -> bool:
         if (
             event.type() == QEvent.Type.KeyPress
             and self.video.path is not None
@@ -266,11 +266,11 @@ class MainWindow(QMainWindow):
                 self.topControl.back(1)
         return False
 
-    def mousePressEvent(self, QMouseEvent):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         focusedWidget = QApplication.focusWidget()
         if isinstance(focusedWidget, QLineEdit) or isinstance(focusedWidget, QTextEdit):
             focusedWidget.clearFocus()
-        QMainWindow.mousePressEvent(self, QMouseEvent)
+        QMainWindow.mousePressEvent(self, event)
 
 
 if __name__ == "__main__":

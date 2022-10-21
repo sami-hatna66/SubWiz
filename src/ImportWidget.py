@@ -51,7 +51,7 @@ class ImportSRTThread(QThread):
         self.path = path
 
     # Start asynchronous thread
-    def run(self):
+    def run(self) -> None:
         data = []
         
         # Parse input srt file
@@ -98,3 +98,5 @@ class ImportSRTThread(QThread):
             self.finishedImportSignal.emit(data)
             srtFile.close()
             self.quit()
+    
+        return super().run()

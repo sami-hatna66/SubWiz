@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QBrush, QColor
-from PyQt5.QtWidgets import QStyledItemDelegate, QPlainTextEdit, QLineEdit, QTableView, QWidget, QVBoxLayout, QAbstractItemView
+from PyQt5.QtGui import QBrush, QColor, QKeyEvent, QMouseEvent
+from PyQt5.QtWidgets import QStyledItemDelegate, QPlainTextEdit, QLineEdit, QTableView, QWidget, QVBoxLayout, QAbstractItemView, QStyleOptionViewItem
 from PyQt5.QtCore import QAbstractTableModel, pyqtSignal, QModelIndex, Qt
 import re
 from datetime import datetime
@@ -16,22 +16,22 @@ def validateTimestampFormat(text):
 
 # Text editors which are shown when user edits any subtitle body cell in table
 class InputBodyDelegate(QStyledItemDelegate):
-    def createEditor(self, QWidget, QStyleOptionViewItem, QModelIndex):
-        self.textEdit = QPlainTextEdit(QWidget)
+    def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QModelIndex) -> QWidget:
+        self.textEdit = QPlainTextEdit(parent)
         return self.textEdit
 
-    def destroyEditor(self, QWidget, QModelIndex):
-        return super().destroyEditor(QWidget, QModelIndex)
+    def destroyEditor(self, editor: QWidget, index: QModelIndex) -> None:
+        return super().destroyEditor(editor, index)
 
 
 # Text editor which shows when user edits a timestamp cell in table
 # Supports timestamp validation for contents
 class InputTimeDelegate(QStyledItemDelegate):
-    def createEditor(self, QWidget, QStyleOptionViewItem, QModelIndex):
-        self.lineEdit = QLineEdit(QWidget)
-        self.lineEdit.textChanged.connect(lambda: self.textChangedSlot(QModelIndex))
+    def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QModelIndex) -> QWidget:
+        self.lineEdit = QLineEdit(parent)
+        self.lineEdit.textChanged.connect(lambda: self.textChangedSlot(index))
         return self.lineEdit
-
+    
     def textChangedSlot(self, index):
         if index.column() < 2:
             # Color cell green if contents is a valid timestamp
@@ -44,8 +44,8 @@ class InputTimeDelegate(QStyledItemDelegate):
             else:
                 self.lineEdit.setStyleSheet("background-color: #850A3A")
 
-    def destroyEditor(self, QWidget, QModelIndex):
-        return super().destroyEditor(QWidget, QModelIndex)
+    def destroyEditor(self, editor: QWidget, index: QModelIndex) -> None:
+        return super().destroyEditor(editor, index)
 
 
 # Table implementation conforms to Qt's Model View Architecture
@@ -152,7 +152,7 @@ class SubtitleTableModel(QAbstractTableModel):
         return 3
 
     # Define table behaviour
-    def flags(self, index):
+    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
         return (
             Qt.ItemFlag.ItemIsEnabled
             | Qt.ItemFlag.ItemIsSelectable
@@ -185,20 +185,20 @@ class SubtitleTable(QTableView):
             self.setRowHeight(row, self.rowHeight(row) + 10)
 
     # Propagate key press events upwards to main where they get reassigned to media control functions
-    def keyPressEvent(self, QKeyEvent):
-        if QKeyEvent.key() == Qt.Key.Key_Space:
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        if event.key() == Qt.Key.Key_Space:
             self.spaceSignal.emit()
-        elif QKeyEvent.key() == Qt.Key.Key_Left:
+        elif event.key() == Qt.Key.Key_Left:
             self.leftSignal.emit()
-        elif QKeyEvent.key() == Qt.Key.Key_Right:
+        elif event.key() == Qt.Key.Key_Right:
             self.rightSignal.emit()
 
-    def mousePressEvent(self, QMouseEvent):
-        clickedIndex = self.indexAt(QMouseEvent.pos())
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        clickedIndex = self.indexAt(event.pos())
         clickedRow = clickedIndex.row()
 
         # A right click highlights row, marking it as ready for marking start and end times
-        if QMouseEvent.button() == Qt.MouseButton.RightButton:
+        if event.button() == Qt.MouseButton.RightButton:
             # If click doesn't fall on any row, clear selection
             if len(self.selectionModel().selectedRows()) == 0 or clickedRow == -1:
                 self.clearSelection()
@@ -215,7 +215,7 @@ class SubtitleTable(QTableView):
             self.setDisabled(False)
 
         # Left clicks open individual cells for editing
-        elif QMouseEvent.button() == Qt.MouseButton.LeftButton:
+        elif event.button() == Qt.MouseButton.LeftButton:
             # If click doesn't fall on any row, clear selection
             if clickedRow == -1:
                 self.clearSelection()

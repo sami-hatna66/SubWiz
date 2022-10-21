@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QPainter, QFont, QPen, QBrush, QColor, QPainterPath
+from PyQt5.QtGui import QPainter, QFont, QPen, QBrush, QColor, QPainterPath, QMouseEvent, QPaintEvent
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import pyqtSignal, Qt
 
@@ -65,22 +65,22 @@ class Timeline(QWidget):
         return (pos / self.scale) * 1000
 
     # Click on timeline changes playback position
-    def mousePressEvent(self, QMouseEvent):
-        self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        self.setPlayheadPos(self.posToTime(event.x()))
         self.update()
         self.playheadChangedSignal.emit(self.playheadPos, self.scale)
         self.clicking = True
 
-    def mouseMoveEvent(self, QMouseEvent):
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if self.clicking:
-            self.setPlayheadPos(self.posToTime(QMouseEvent.x()))
+            self.setPlayheadPos(self.posToTime(event.x()))
             self.update()
             self.playheadChangedSignal.emit(self.playheadPos, self.scale)
 
-    def mouseReleaseEvent(self, QMouseEvent):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         self.clicking = False
 
-    def paintEvent(self, QPaintEvent):
+    def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
         painter.begin(self)
 
