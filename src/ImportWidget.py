@@ -19,10 +19,9 @@ class ImportWidget(QWidget):
         self.layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.layout)
 
-        self.layout.addWidget(QLabel("Parsing SRT File"))
+        self.layout.addWidget(QLabel("Parsing SRT File..."))
 
         self.progressBar = QProgressBar()
-        self.progressBar.setStyleSheet("QProgressBar::chunk { background-color: red; }")
         self.layout.addWidget(self.progressBar)
 
         self.show()

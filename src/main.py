@@ -24,7 +24,12 @@ class MainWindow(QMainWindow):
         self.centreHBL = QHBoxLayout()
         self.centre.setLayout(self.centreHBL)
 
+        self.leftColumn = QWidget()
+        self.rightColumn = QWidget()
+
         self.vidContainer = QWidget()
+        self.vidContainer.setAttribute(Qt.WA_StyledBackground, True)
+        self.vidContainer.setStyleSheet("background-color: #2D2E3B;")
         self.vidLayout = QVBoxLayout()
         self.vidLayout.setContentsMargins(0, 0, 0, 0)
         self.vidContainer.setLayout(self.vidLayout)
@@ -34,6 +39,7 @@ class MainWindow(QMainWindow):
         self.waveformSA = QScrollArea()
 
         self.videoTimelineVBL = QVBoxLayout()
+        self.leftColumn.setLayout(self.videoTimelineVBL)
         self.videoTimelineVBL.addWidget(self.vidContainer)
         self.vidLayout.addWidget(self.video)
         self.topControl = TopControl(self.video, self.timeline)
@@ -46,6 +52,7 @@ class MainWindow(QMainWindow):
         self.timelineSA.horizontalScrollBar().valueChanged.connect(self.timeline.update)
         self.timelineSA.verticalScrollBar().setEnabled(False)
         self.timelineSA.verticalScrollBar().setStyleSheet("QScrollBar { height:0px; }")
+        self.timelineSA.setStyleSheet("background-color: #2D2E3B;")
         self.videoTimelineVBL.addWidget(self.timelineSA)
 
         self.subtitle = QLabel("", self.vidContainer)
@@ -63,7 +70,9 @@ class MainWindow(QMainWindow):
         self.workPanel.adjustSubtitle.connect(self.adjustSubtitle)
         self.workPanel.subtitleTable.leftSignal.connect(lambda: self.topControl.back(1))
 
-        self.timeline.passInSubtitles(self.workPanel.sortedSubtitleList, self.workPanel.subtitleList)
+        self.timeline.passInSubtitles(
+            self.workPanel.sortedSubtitleList, self.workPanel.subtitleList
+        )
 
         self.bottomControl = BottomControl(
             self.video,
@@ -73,17 +82,14 @@ class MainWindow(QMainWindow):
             self.waveformSA,
         )
         self.videoTimelineVBL.addWidget(self.bottomControl)
-        self.centreHBL.addLayout(self.videoTimelineVBL, stretch=2)
+        self.centreHBL.addWidget(self.leftColumn, stretch=2)
 
         self.videoTimelineVBL.setSpacing(1)
 
         self.containerLayout = QVBoxLayout()
-        self.workSA = QScrollArea()
-        self.workSA.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.workSA.setWidgetResizable(True)
-        self.workSA.setWidget(self.workPanel)
-        self.containerLayout.addWidget(self.workSA)
-        self.centreHBL.addLayout(self.containerLayout, stretch=1)
+        self.rightColumn.setLayout(self.containerLayout)
+        self.containerLayout.addWidget(self.workPanel)
+        self.centreHBL.addWidget(self.rightColumn, stretch=1)
 
         self.importPanel = ImportWidget(self.workPanel)
         self.importPanel.finishedImportSignal.connect(self.finishedImportSlot)
@@ -106,6 +112,7 @@ class MainWindow(QMainWindow):
         self.waveformSA.setWidgetResizable(True)
         self.waveformSA.setFixedHeight(220)
         self.waveformSA.verticalScrollBar().setStyleSheet("height: 0px;")
+        self.waveformSA.setStyleSheet("background-color: #2D2E3B;")
         self.waveformWidget = WaveformWidget(self.video)
         self.video.mediaLoadedSignal.connect(self.waveformWidget.startWorker)
         self.waveformSA.setWidget(self.waveformWidget)
@@ -132,6 +139,8 @@ class MainWindow(QMainWindow):
 
         self.showWaveformAction = QAction("Show Audio Waveform", self)
         self.showWaveformAction.triggered.connect(self.toggleWaveformVisibility)
+        self.showWaveformAction.setEnabled(False)
+        self.video.mediaLoadedSignal.connect(lambda: self.showWaveformAction.setEnabled(True))
         self.viewMenu.addAction(self.showWaveformAction)
 
         self.video.mediaPlayer.positionChanged.connect(self.workPanel.subSearch)
@@ -145,17 +154,12 @@ class MainWindow(QMainWindow):
             self.vidContainer.height() - self.subtitle.height() - 5,
         )
 
-        # ---------------------------------------------------------------------------------------------------------------
-        self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
-        self.video.initVideo()
-        # ---------------------------------------------------------------------------------------------------------------
-
     def importSRT(self):
         srtFilename, _ = QFileDialog.getOpenFileName(
             self, "Open SRT File", os.path.abspath(os.sep), "(*.srt)"
         )
         if srtFilename != "":
-            self.workSA.hide()
+            self.workPanel.hide()
             self.addSubtitleBTN.hide()
             self.importPanel.show()
 
@@ -193,9 +197,11 @@ class MainWindow(QMainWindow):
         self.workPanel.subtitleModel.layoutChanged.emit()
         self.workPanel.subtitleTable.changeRowHeights()
         self.importPanel.hide()
-        self.workSA.show()
+        self.workPanel.show()
         self.addSubtitleBTN.show()
-        self.timeline.passInSubtitles(self.workPanel.sortedSubtitleList, self.workPanel.subtitleList)
+        self.timeline.passInSubtitles(
+            self.workPanel.sortedSubtitleList, self.workPanel.subtitleList
+        )
         self.timeline.update()
 
     def exportSRT(self):
@@ -208,7 +214,7 @@ class MainWindow(QMainWindow):
         else:
             self.waveformSA.show()
             self.showWaveformAction.setText("Hide Audio Waveform")
-    
+
     def adjustSubtitle(self):
         self.subtitle.move(
             self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
@@ -242,7 +248,9 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(os.path.join(os.getcwd(), "assets", "SubwizIcon.png")))
+    app.setApplicationName("Subwiz")
     root = MainWindow()
+    root.setWindowTitle("Subwiz")
     with open(os.path.join(os.getcwd(), "stylesheet", "stylesheet.css"), "r") as ss:
         root.setStyleSheet(ss.read())
     root.show()

@@ -36,11 +36,11 @@ class InputTimeDelegate(QStyledItemDelegate):
     def textChangedSlot(self, index):
         if index.column() < 2:
             if validateTimestampFormat(self.lineEdit.text()):
-                self.lineEdit.setStyleSheet("background-color: #EBFFEB")
+                self.lineEdit.setStyleSheet("background-color: #305540")
             elif self.lineEdit.text() == "":
-                self.lineEdit.setStyleSheet("background-color: #FFFFFF")
+                self.lineEdit.setStyleSheet("background-color: #2D2E3B")
             else:
-                self.lineEdit.setStyleSheet("background-color: #FA867E")
+                self.lineEdit.setStyleSheet("background-color: #850A3A")
 
     def destroyEditor(self, QWidget, QModelIndex):
         return super().destroyEditor(QWidget, QModelIndex)
@@ -67,13 +67,15 @@ class SubtitleTableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.BackgroundRole:
             if index.column() < 2:
                 if validateTimestampFormat(self.dataStore[index.row()][index.column()]):
-                    return QBrush(QColor("#EBFFEB"))
+                    return QBrush(QColor("#305540"))
                 elif self.dataStore[index.row()][index.column()] == "":
-                    return QBrush(QColor("#FFFFFF"))
+                    return QBrush(QColor("#2D2E3B"))
                 else:
-                    return QBrush(QColor("#FA867E"))
+                    return QBrush(QColor("#850A3A"))
             else:
-                return QBrush(QColor("#FFFFFF"))
+                return QBrush(QColor("#2D2E3B"))
+        if role == Qt.ItemDataRole.TextColorRole:
+            return QBrush(QColor("#FFFFFF"))
 
     def setData(self, index: QModelIndex, value, role: int = ...):
         if role == Qt.ItemDataRole.EditRole:
@@ -114,7 +116,10 @@ class SubtitleTableModel(QAbstractTableModel):
                     ][index.column()] = value
                 self.transmitSortedDataStore.emit(self.sortedDataStore)
 
-            return True
+        if role == Qt.ItemDataRole.TextColorRole:
+            return QBrush(QColor("#FFFFFF"))
+
+        return True
 
     def rowCount(self, parent=None, *args, **kwargs):
         return len(self.dataStore)
@@ -207,6 +212,7 @@ class WorkPanel(QWidget):
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setLayout(self.layout)
+        self.layout.setContentsMargins(0, 0, 0, 0)
 
         self.subtitleTable = SubtitleTable()
         self.subtitleTable.setSelectionBehavior(

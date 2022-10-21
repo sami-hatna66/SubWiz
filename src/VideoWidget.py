@@ -13,6 +13,7 @@ class VideoWidget(QVideoWidget):
     placeholderLBL = None
     timeline = None
     vCap = None
+    welcomeImg = None
 
     mediaLoadedSignal = pyqtSignal(str)
 
@@ -20,7 +21,9 @@ class VideoWidget(QVideoWidget):
         super(VideoWidget, self).__init__()
         self.path = path
 
-        self.placeholderLBL = QLabel("Drag file or click", self)
+        self.placeholderLBL = QLabel(self)
+        self.welcomeImg = QPixmap(os.path.join(os.getcwd(), "assets", "welcomeScreen.png"))
+        self.placeholderLBL.setPixmap(self.welcomeImg.scaled(self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
         self.mediaPlayer = QMediaPlayer(None)
 
@@ -59,10 +62,12 @@ class VideoWidget(QVideoWidget):
         self.timeline.update()
         self.mediaLoadedSignal.emit(self.path)
         self.resizeEvent(QResizeEvent(QSize(0, 0), QSize(self.width(), self.height())))
-    
+
     def resizeEvent(self, event: QResizeEvent) -> None:
+        self.placeholderLBL.setPixmap(self.welcomeImg.scaled(self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.placeholderLBL.resize(self.width(), self.height())
         if self.vCap is not None:
-            videoWidth  = self.vCap.get(cv2.CAP_PROP_FRAME_WIDTH) 
+            videoWidth = self.vCap.get(cv2.CAP_PROP_FRAME_WIDTH)
             videoHeight = self.vCap.get(cv2.CAP_PROP_FRAME_HEIGHT)
             widgetWidth = self.width()
             widgetHeight = self.height()
@@ -72,7 +77,6 @@ class VideoWidget(QVideoWidget):
             else:
                 ratio = widgetHeight / videoHeight
                 self.setFixedWidth(ratio * videoWidth)
-
 
         return super().resizeEvent(event)
 
@@ -91,7 +95,7 @@ class VideoWidget(QVideoWidget):
             self.selectVideo()
 
     def dragEnterEvent(self, event):
-        self.setStyleSheet("border: 1px solid black")
+        self.setStyleSheet("border: 1px solid white;")
         if event.mimeData().hasUrls:
             event.accept()
         else:

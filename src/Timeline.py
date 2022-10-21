@@ -23,7 +23,7 @@ class Timeline(QWidget):
 
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)
         self.setFixedSize(0, 200)
-        self.setStyleSheet("border: 0px;")
+        self.setStyleSheet("border: 0px; background-color: #2D2E3B;")
 
         self.show()
 
@@ -82,8 +82,9 @@ class Timeline(QWidget):
         painter.begin(self)
 
         timeFont = QFont()
-        timeFont.setPixelSize(7)
+        timeFont.setPixelSize(10)
         painter.setFont(timeFont)
+        painter.setPen(QPen(Qt.GlobalColor.white))
 
         if self.scale >= 2:
             for i in range(1, int(self.duration) + 1):
@@ -97,12 +98,12 @@ class Timeline(QWidget):
                     pass
                 elif i < 60:
                     painter.drawText(
-                        i * self.scale * 60 - 15, 27, "00:" + str(i).zfill(2) + ":00"
+                        i * self.scale * 60 - 23, 30, "00:" + str(i).zfill(2) + ":00"
                     )
                 else:
                     painter.drawText(
-                        i * self.scale * 60 - 15,
-                        27,
+                        i * self.scale * 60 - 23,
+                        30,
                         str(i // 60).zfill(2)
                         + ":"
                         + str(i - (60 * (i // 60))).zfill(2)
@@ -112,13 +113,13 @@ class Timeline(QWidget):
         hours = int(self.duration // 3600)
         for i in range(1, hours + 1):
             painter.drawLine(i * self.scale * 3600, 0, i * self.scale * 3600, 30)
-            painter.drawText(i * self.scale * 3600 - 15, 37, str(i).zfill(2) + "00:00")
+            painter.drawText(i * self.scale * 3600 - 23, 43, str(i).zfill(2) + ":00:00")
 
         maxTiers = (self.height() - 40) // 40
         data = []
         lanesData = []
         stack = [[0, 0, 0] for x in range(maxTiers)]
-        colours = ["#FFFF00", "#0033CC", "#FF9900", "#00CC00", "#660099"]
+        colours = ["#9AA7E2", "#BEA6E6", "#796EA8", "#9568A2", "#634290"]
         colourIndex = 0
 
         visibleRegion = self.visibleRegion().boundingRect()
@@ -154,6 +155,20 @@ class Timeline(QWidget):
                 lanesData.append([val, yIndex])
                 stack[yIndex] = val
 
+            yOffset = 114
+            if len(lanesData) > 0:
+                maxLane = 0
+                for sub in lanesData:
+                    if maxLane == 2:
+                        maxLane = 2
+                        break
+                    elif sub[1] > maxLane:
+                        maxLane = sub[1]
+                if maxLane == 1:
+                    yOffset = 90
+                elif maxLane == 2:
+                    yOffset = 66
+
             for x in range(0, len(lanesData)):
                 start = lanesData[x][0][0]
                 end = lanesData[x][0][1]
@@ -163,7 +178,10 @@ class Timeline(QWidget):
                 painter.setPen(QPen(QColor(colours[colourIndex])))
                 painter.setBrush(QBrush(QColor(colours[colourIndex])))
                 painter.drawRect(
-                    start * self.scale, 60 + (lane * 30), (end - start) * self.scale, 20
+                    start * self.scale,
+                    yOffset + (lane * 30),
+                    (end - start) * self.scale,
+                    20,
                 )
                 colourIndex = 0 if colourIndex >= len(colours) - 1 else colourIndex + 1
                 painter.setPen(QPen(Qt.GlobalColor.black))
@@ -171,13 +189,17 @@ class Timeline(QWidget):
                 font.setPointSize(15)
                 painter.setFont(font)
                 if self.scaleIndex > 4:
-                    target = list(v[3] == id for v in self.unsortedSubtitleList).index(True)
+                    target = list(v[3] == id for v in self.unsortedSubtitleList).index(
+                        True
+                    )
                     painter.drawText(
-                        start * self.scale + 5, 75 + (lane * 30), str(target + 1)
+                        start * self.scale + 5,
+                        yOffset + 15 + (lane * 30),
+                        str(target + 1),
                     )
 
-        painter.setPen(QPen(Qt.GlobalColor.black))
-        painter.drawLine(0, 40, self.width(), 40)
+        painter.setPen(QPen(Qt.GlobalColor.white))
+        painter.drawLine(0, 48, self.width(), 48)
 
         painter.setPen(Qt.GlobalColor.red)
         painter.setBrush(Qt.GlobalColor.red)

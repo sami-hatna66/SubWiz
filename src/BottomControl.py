@@ -37,7 +37,7 @@ class BottomControl(QWidget):
         self.goToPlayheadBTN.clicked.connect(self.goToPlayhead)
         self.layout.addWidget(self.goToPlayheadBTN)
 
-        self.setFixedHeight(40)
+        self.setFixedHeight(50)
 
     def goToPlayhead(self):
         self.timelineSA.horizontalScrollBar().setValue(

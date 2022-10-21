@@ -31,6 +31,7 @@ class ExportWidget(QWidget):
 
         self.layout.addWidget(QLabel("Filter Errors:"), 2, 0)
         self.filterErrors = QCheckBox()
+        self.filterErrors.setFixedSize(13, 13)
         self.layout.addWidget(self.filterErrors, 2, 1)
 
         self.exportBTN = QPushButton("Export")
@@ -38,6 +39,14 @@ class ExportWidget(QWidget):
         self.layout.addWidget(self.exportBTN, 3, 0, 1, 2)
 
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
+
+        with open(os.path.join(os.getcwd(), "stylesheet", "stylesheet.css"), "r") as ss:
+            self.setStyleSheet(ss.read())
+
+        self.setWindowFlags(
+            Qt.WindowType.CustomizeWindowHint | Qt.WindowType.WindowCloseButtonHint
+        )
+
         self.show()
 
     def selectPath(self):
@@ -56,10 +65,16 @@ class ExportWidget(QWidget):
         else:
             outputFile = open(self.exportPath + "/" + self.nameTB.text() + ".srt", "w")
             for x in range(0, len(self.subtitleList)):
-                if (not self.filterErrors.isChecked()) or (validateTimestampFormat(self.subtitleList[x][0]) and validateTimestampFormat(self.subtitleList[x][1])):
+                if (not self.filterErrors.isChecked()) or (
+                    validateTimestampFormat(self.subtitleList[x][0])
+                    and validateTimestampFormat(self.subtitleList[x][1])
+                ):
                     lines = [
                         str(x + 1) + "\n",
-                        self.subtitleList[x][0] + " --> " + self.subtitleList[x][1] + "\n",
+                        self.subtitleList[x][0]
+                        + " --> "
+                        + self.subtitleList[x][1]
+                        + "\n",
                         self.subtitleList[x][2] + "\n",
                         "\n",
                     ]

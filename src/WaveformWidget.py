@@ -16,6 +16,9 @@ class WaveformWidget(QWidget):
 
         self.setFixedSize(200, 220)
 
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setStyleSheet("background-color: #2D2E3B; border: 0px;")
+
         self.video = video
         self.video.mediaPlayer.positionChanged.connect(self.setPlayheadPos)
 
@@ -42,8 +45,10 @@ class WaveformWidget(QWidget):
         painter.begin(self)
 
         if not self.canDraw:
-            painter.drawText(10, 110, "Generating Waveform")
+            painter.setPen(QPen(Qt.white))
+            painter.drawText(10, 110, "Generating Waveform...")
         else:
+            painter.setPen(QPen(QColor("#61657E")))
             self.setFixedSize(len(self.data), 200)
             maxVal = max(self.data)
             for i in range(0, len(self.data)):
