@@ -1,7 +1,7 @@
 import os.path
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QScrollArea, QVBoxLayout, QLabel, QPushButton, QMenuBar, QAction, QFileDialog, QApplication, QLineEdit
+from PyQt5.QtCore import Qt, QEvent, QTextEdit
 from VideoWidget import VideoWidget
 from Timeline import Timeline
 from TopControl import TopControl

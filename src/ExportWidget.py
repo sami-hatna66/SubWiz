@@ -1,6 +1,5 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout, QLabel, QLineEdit, QCheckBox, QFileDialog
+from PyQt5.QtCore import Qt
 import os
 from WorkPanel import validateTimestampFormat
 

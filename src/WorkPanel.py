@@ -1,6 +1,6 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QBrush, QColor
+from PyQt5.QtWidgets import QStyledItemDelegate, QPlainTextEdit, QLineEdit, QTableView, QWidget, QVBoxLayout, QAbstractItemView
+from PyQt5.QtCore import QAbstractTableModel, pyqtSignal, QModelIndex, Qt
 import re
 from datetime import datetime
 from operator import itemgetter

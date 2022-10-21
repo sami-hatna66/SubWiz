@@ -1,7 +1,7 @@
 import numpy as np
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QPainter, QPen, QColor
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from moviepy.editor import VideoFileClip
 
 

@@ -1,8 +1,8 @@
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QResizeEvent, QPixmap
+from PyQt5.QtWidgets import QLabel, QFileDialog
+from PyQt5.QtCore import pyqtSignal, Qt, QUrl, QSize
 import os
 import cv2
 

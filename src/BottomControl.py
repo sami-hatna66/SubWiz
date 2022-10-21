@@ -1,6 +1,5 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton
+from PyQt5.QtCore import Qt
 from operator import itemgetter
 
 

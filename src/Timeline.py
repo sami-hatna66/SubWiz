@@ -1,6 +1,6 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QPainter, QFont, QPen, QBrush, QColor, QPainterPath
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtCore import pyqtSignal, Qt
 
 
 class Timeline(QWidget):

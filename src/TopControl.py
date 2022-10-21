@@ -1,6 +1,6 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
+from PyQt5.QtCore import Qt
 from datetime import timedelta
 import os
 
