@@ -13,7 +13,7 @@ class BottomControl(QWidget):
 
     def __init__(self, video, timelineSA, timeline, workPanel, waveformSA):
         super(BottomControl, self).__init__()
-
+        # Assign args to attributes
         self.timelineSA = timelineSA
         self.timeline = timeline
         self.video = video
@@ -39,6 +39,7 @@ class BottomControl(QWidget):
 
         self.setFixedHeight(50)
 
+    # Move timeline scroll area position so that playhead is at center
     def goToPlayhead(self):
         self.timelineSA.horizontalScrollBar().setValue(
             int(
@@ -53,6 +54,7 @@ class BottomControl(QWidget):
             )
         )
 
+    # Convert milliseconds to a datetime compatible timestamp
     @staticmethod
     def msecToTimeStamp(time):
         hrs = time // 3600000
@@ -65,6 +67,7 @@ class BottomControl(QWidget):
         return result
 
     def markStartTime(self):
+        # Mark start time in selected rows with position of playhead
         for index in self.workPanel.subtitleTable.selectionModel().selectedRows():
             self.workPanel.subtitleList[index.row()][0] = str(
                 self.msecToTimeStamp(self.video.mediaPlayer.position())
@@ -75,6 +78,7 @@ class BottomControl(QWidget):
             self.workPanel.subtitleTable.clearSelection()
             self.workPanel.subtitleTable.selectRow(index.row())
 
+            # Sort underlying sorted data structure
             targetId = self.workPanel.subtitleList[index.row()][3]
             self.workPanel.sortedSubtitleList[
                 list(v[3] == targetId for v in self.workPanel.sortedSubtitleList).index(

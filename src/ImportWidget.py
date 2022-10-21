@@ -1,7 +1,6 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-import time
 import re
 
 
@@ -13,6 +12,7 @@ class ImportWidget(QWidget):
 
     def __init__(self, workPanel):
         super(ImportWidget, self).__init__()
+        # Assign arg to attribute
         self.workPanel = workPanel
 
         self.layout = QVBoxLayout()
@@ -26,6 +26,7 @@ class ImportWidget(QWidget):
 
         self.show()
 
+    # Thread will continually feed back to this class via incrementProgressBarSignal
     def importFile(self, path):
         self.progressBar.setValue(0)
         self.progressBar.setMaximum(sum(1 for line in open(path)))
@@ -50,15 +51,19 @@ class ImportSRTThread(QThread):
         super(ImportSRTThread, self).__init__()
         self.path = path
 
+    # Start asynchronous thread
     def run(self):
         data = []
-
+        
+        # Parse input srt file
         with open(self.path) as srtFile:
             prevLine = "number"
+            # regex searches for timestamps
             timestampPattern = re.compile(
                 "([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])([:,])\d{1,3} --> ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])([:,])\d{1,3}"
             )
 
+            # Follows format [Start, End, Text]
             item = []
 
             for line in srtFile:
@@ -90,6 +95,7 @@ class ImportSRTThread(QThread):
                 item[2] = item[2].rstrip()
                 data.append(item)
 
+            # Returns an unsorted list of subtitles, ready to be passed to table model in WorkPanel
             self.finishedImportSignal.emit(data)
             srtFile.close()
             self.quit()

@@ -11,7 +11,7 @@ class ExportWidget(QWidget):
 
     def __init__(self, subtitleList):
         super(ExportWidget, self).__init__()
-
+        # Assign arg to attribute
         self.subtitleList = subtitleList
 
         self.setAttribute(Qt.WidgetAttribute.WA_QuitOnClose, False)
@@ -49,6 +49,7 @@ class ExportWidget(QWidget):
 
         self.show()
 
+    # select path to export to via file explorer
     def selectPath(self):
         filename = QFileDialog.getExistingDirectory(
             self, "Select Export Directory", os.path.abspath(os.sep)
@@ -58,6 +59,7 @@ class ExportWidget(QWidget):
             self.exportPath = filename
 
     def export(self):
+        # If any required fields are blank, highlight to user and don't proceed
         if self.nameTB.text() == "":
             self.nameTB.setStyleSheet("border: 1px solid red")
         elif self.exportPath is None:
@@ -65,6 +67,7 @@ class ExportWidget(QWidget):
         else:
             outputFile = open(self.exportPath + "/" + self.nameTB.text() + ".srt", "w")
             for x in range(0, len(self.subtitleList)):
+                # if filterErrors is checked, export will skip any subtitles with erroneous timestamps
                 if (not self.filterErrors.isChecked()) or (
                     validateTimestampFormat(self.subtitleList[x][0])
                     and validateTimestampFormat(self.subtitleList[x][1])

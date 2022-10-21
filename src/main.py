@@ -19,14 +19,18 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
+        # Central widget
         self.centre = QWidget()
         self.setCentralWidget(self.centre)
         self.centreHBL = QHBoxLayout()
         self.centre.setLayout(self.centreHBL)
 
+        # Contains video, top control, timeline and bottom control
         self.leftColumn = QWidget()
+        # Contains work panel, import panel, add/delete buttons and waveform
         self.rightColumn = QWidget()
 
+        # Container widget for video
         self.vidContainer = QWidget()
         self.vidContainer.setAttribute(Qt.WA_StyledBackground, True)
         self.vidContainer.setStyleSheet("background-color: #2D2E3B;")
@@ -35,15 +39,19 @@ class MainWindow(QMainWindow):
         self.vidContainer.setLayout(self.vidLayout)
 
         self.timeline = Timeline()
+ 
         self.video = VideoWidget(self.timeline)
+        
         self.waveformSA = QScrollArea()
 
         self.videoTimelineVBL = QVBoxLayout()
         self.leftColumn.setLayout(self.videoTimelineVBL)
         self.videoTimelineVBL.addWidget(self.vidContainer)
         self.vidLayout.addWidget(self.video)
+
         self.topControl = TopControl(self.video, self.timeline)
         self.videoTimelineVBL.addWidget(self.topControl)
+
         self.timelineSA = QScrollArea()
         self.timelineSA.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.timelineSA.setWidgetResizable(True)
@@ -55,21 +63,28 @@ class MainWindow(QMainWindow):
         self.timelineSA.setStyleSheet("background-color: #2D2E3B;")
         self.videoTimelineVBL.addWidget(self.timelineSA)
 
+        # Used for displaying subtitles over video widget
         self.subtitle = QLabel("", self.vidContainer)
         self.subtitle.hide()
         self.subtitle.setStyleSheet("color: white; background-color: black")
         self.subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.workPanel = WorkPanel(self.subtitle, self.video, self.timeline)
+        # Signal passes any space key presses up to play/pause function instead of calling on table
         self.workPanel.subtitleTable.spaceSignal.connect(
             self.topControl.playPauseAction
         )
+        # Same for right and left arrow key press
         self.workPanel.subtitleTable.rightSignal.connect(
             lambda: self.topControl.forward(1)
         )
+        self.workPanel.subtitleTable.leftSignal.connect(
+            lambda: self.topControl.back(1)
+        )
+        # Move subtitle label back to bottom center when its size changes
         self.workPanel.adjustSubtitle.connect(self.adjustSubtitle)
-        self.workPanel.subtitleTable.leftSignal.connect(lambda: self.topControl.back(1))
 
+        # Pass sorted and unsorted subtitle lists to timeline object
         self.timeline.passInSubtitles(
             self.workPanel.sortedSubtitleList, self.workPanel.subtitleList
         )
@@ -82,6 +97,8 @@ class MainWindow(QMainWindow):
             self.waveformSA,
         )
         self.videoTimelineVBL.addWidget(self.bottomControl)
+
+        # Add leftColumn to main layout
         self.centreHBL.addWidget(self.leftColumn, stretch=2)
 
         self.videoTimelineVBL.setSpacing(1)
@@ -89,11 +106,15 @@ class MainWindow(QMainWindow):
         self.containerLayout = QVBoxLayout()
         self.rightColumn.setLayout(self.containerLayout)
         self.containerLayout.addWidget(self.workPanel)
+
+        # Add rightColumn to main layout
         self.centreHBL.addWidget(self.rightColumn, stretch=1)
 
         self.importPanel = ImportWidget(self.workPanel)
+        # Signal for when importing srt is done, connects to slot which hides import panel and show work panel
         self.importPanel.finishedImportSignal.connect(self.finishedImportSlot)
         self.containerLayout.addWidget(self.importPanel)
+        # importPanel is hidden until user imports an srt file
         self.importPanel.hide()
 
         self.addDeleteHBL = QHBoxLayout()
@@ -114,13 +135,14 @@ class MainWindow(QMainWindow):
         self.waveformSA.verticalScrollBar().setStyleSheet("height: 0px;")
         self.waveformSA.setStyleSheet("background-color: #2D2E3B;")
         self.waveformWidget = WaveformWidget(self.video)
+        # When a video file has been loaded in, start thread for generating its waveform
         self.video.mediaLoadedSignal.connect(self.waveformWidget.startWorker)
         self.waveformSA.setWidget(self.waveformWidget)
         self.containerLayout.addWidget(self.waveformSA)
         self.waveformSA.hide()
 
         self.mainMenu = QMenuBar(self)
-
+        # File menu and actions
         self.fileMenu = self.mainMenu.addMenu(" &File")
 
         self.importNewVidAction = QAction("Import New Video File", self)
@@ -135,25 +157,26 @@ class MainWindow(QMainWindow):
         self.exportAction.triggered.connect(self.exportSRT)
         self.fileMenu.addAction(self.exportAction)
 
+        # View menu and actions
         self.viewMenu = self.mainMenu.addMenu(" &View")
 
         self.showWaveformAction = QAction("Show Audio Waveform", self)
         self.showWaveformAction.triggered.connect(self.toggleWaveformVisibility)
         self.showWaveformAction.setEnabled(False)
+        # showWaveformAction should only be enabled if a video has been loaded
         self.video.mediaLoadedSignal.connect(lambda: self.showWaveformAction.setEnabled(True))
         self.viewMenu.addAction(self.showWaveformAction)
 
+        # Display subtitles for current position every time video position changes
         self.video.mediaPlayer.positionChanged.connect(self.workPanel.subSearch)
 
         self.installEventFilter(self)
 
         self.showMaximized()
 
-        self.subtitle.move(
-            self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
-            self.vidContainer.height() - self.subtitle.height() - 5,
-        )
+        self.adjustSubtitle()
 
+    # Select srt file and start import thread
     def importSRT(self):
         srtFilename, _ = QFileDialog.getOpenFileName(
             self, "Open SRT File", os.path.abspath(os.sep), "(*.srt)"
@@ -165,6 +188,8 @@ class MainWindow(QMainWindow):
 
             self.importPanel.importFile(srtFilename)
 
+    # Once srt is imported, load into data structures, hide import panel and show work panel
+    # TODO move sorting code into thread
     def finishedImportSlot(self, newList):
         self.workPanel.subtitleList.clear()
         self.workPanel.sortedSubtitleList.clear()
@@ -215,15 +240,18 @@ class MainWindow(QMainWindow):
             self.waveformSA.show()
             self.showWaveformAction.setText("Hide Audio Waveform")
 
+    # Move subtitle label to bottom center of video widget
     def adjustSubtitle(self):
         self.subtitle.move(
             self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
             self.vidContainer.height() - self.subtitle.height() - 5,
         )
 
+    # Fix subtitle label position any time window is resized
     def resizeEvent(self, QResizeEvent):
         self.adjustSubtitle()
 
+    # If a video is loaded, space and arrow key presses should map to media control functions (unless a text box is active)
     def eventFilter(self, source, event):
         if (
             event.type() == QEvent.Type.KeyPress
@@ -251,6 +279,7 @@ if __name__ == "__main__":
     app.setApplicationName("Subwiz")
     root = MainWindow()
     root.setWindowTitle("Subwiz")
+    # Apply stylesheet to all children of root
     with open(os.path.join(os.getcwd(), "stylesheet", "stylesheet.css"), "r") as ss:
         root.setStyleSheet(ss.read())
     root.show()

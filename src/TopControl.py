@@ -13,6 +13,7 @@ class TopControl(QWidget):
 
     def __init__(self, videoInstance, timelineInstance):
         super(TopControl, self).__init__()
+        # Assign args to attributes
         self.videoInstance = videoInstance
         self.timelineInstance = timelineInstance
 
@@ -46,6 +47,7 @@ class TopControl(QWidget):
         self.layout.addWidget(self.forwardBTN)
 
         self.layout.addStretch()
+
         self.speedWidget = SpeedWidget(self.videoInstance)
         self.layout.addWidget(self.speedWidget)
 
@@ -94,6 +96,7 @@ class TopControl(QWidget):
                 )
                 self.isPaused = True
 
+    # amount given in seconds
     def forward(self, amount):
         currentPos = self.videoInstance.mediaPlayer.position()
         if currentPos + (amount * 1000) >= self.videoInstance.getDuration() * 1000:
@@ -110,6 +113,7 @@ class TopControl(QWidget):
 
     def changeTimeStamp(self, newTime):
         if self.duration == "0:00:00":
+            # Update total duration once video has been loaded
             self.duration = str(
                 timedelta(seconds=self.videoInstance.getDuration() / 1000)
             ).split(".")[0]
@@ -150,6 +154,8 @@ class SpeedWidget(QWidget):
         self.show()
         self.layout.setContentsMargins(0, 0, 0, 0)
 
+    # Update button styles to reflect new speed
+    # Feedback new speed to media player
     def changeSpeed(self):
         self.buttonList[self.activeButtonIndex].setStyleSheet(
             "font-weight: normal; border: 1px solid #212624; border-radius: 0px; width: 34px;"
