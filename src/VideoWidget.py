@@ -70,7 +70,7 @@ class VideoWidget(QVideoWidget):
         self.mediaPlayer.play()
         # Adjust timeline for new video
         self.timeline.duration = self.getDuration()
-        self.timeline.setFixedWidth(self.timeline.duration * self.timeline.scale)
+        self.timeline.setFixedWidth(int(self.timeline.duration * self.timeline.scale))
         self.mediaPlayer.positionChanged.connect(self.timeline.setPlayheadPos)
         self.timeline.update()
         # Signal starts audio waveform generation
@@ -90,10 +90,10 @@ class VideoWidget(QVideoWidget):
             widgetHeight = self.height()
             if widgetWidth > widgetHeight:
                 ratio = widgetWidth / videoWidth
-                self.setFixedHeight(ratio * videoHeight)
+                self.setFixedHeight(int(ratio * videoHeight))
             else:
                 ratio = widgetHeight / videoHeight
-                self.setFixedWidth(ratio * videoWidth)
+                self.setFixedWidth(int(ratio * videoWidth))
 
         return super().resizeEvent(event)
 

@@ -290,7 +290,11 @@ QProgressBar::chunk {
 }
 
 QMenu::separator {
-        background: #D5E8D4;
+    background: #212624;
+}
+
+QMenu {
+    color: white;
 }
 
 QToolButton {

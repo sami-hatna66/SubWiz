@@ -55,12 +55,12 @@ class WaveformWidget(QWidget):
             self.setFixedSize(len(self.data), 200)
             maxVal = max(self.data)
             for i in range(0, len(self.data)):
-                lineStart = 110 - ((self.data[i] * (200 / maxVal)) / 2)
-                lineEnd = 110 + ((self.data[i] * (200 / maxVal)) / 2)
+                lineStart = int(110 - ((self.data[i] * (200 / maxVal)) / 2))
+                lineEnd = int(110 + ((self.data[i] * (200 / maxVal)) / 2))
                 painter.drawLine(i, lineStart, i, lineEnd)
             # Draw playhead
             painter.setPen(QPen(Qt.GlobalColor.red))
-            painter.drawLine(self.playheadPos, 0, self.playheadPos, 220)
+            painter.drawLine(int(self.playheadPos), 0, int(self.playheadPos), 220)
 
         painter.end()
 

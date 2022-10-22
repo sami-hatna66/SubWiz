@@ -38,7 +38,7 @@ class Timeline(QWidget):
             self.scaleIndex += 1
             self.scale = self.scaleList[self.scaleIndex]
             self.setPlayheadPos(intermediary)
-            self.setFixedSize(self.duration * self.scale, 200)
+            self.setFixedSize(int(self.duration * self.scale), 200)
             self.update()
 
     def zoomOut(self):
@@ -47,7 +47,7 @@ class Timeline(QWidget):
             self.scaleIndex -= 1
             self.scale = self.scaleList[self.scaleIndex]
             self.setPlayheadPos(intermediary)
-            self.setFixedSize(self.duration * self.scale, 200)
+            self.setFixedSize(int(self.duration * self.scale), 200)
             self.update()
 
     def setPlayheadPos(self, pos):
@@ -68,14 +68,14 @@ class Timeline(QWidget):
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.setPlayheadPos(self.posToTime(event.x()))
         self.update()
-        self.playheadChangedSignal.emit(self.playheadPos, self.scale)
+        self.playheadChangedSignal.emit(int(self.playheadPos), self.scale)
         self.clicking = True
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if self.clicking:
             self.setPlayheadPos(self.posToTime(event.x()))
             self.update()
-            self.playheadChangedSignal.emit(self.playheadPos, self.scale)
+            self.playheadChangedSignal.emit(int(self.playheadPos), self.scale)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         self.clicking = False
@@ -92,22 +92,22 @@ class Timeline(QWidget):
         # Draw second ticks
         if self.scale >= 2:
             for i in range(1, int(self.duration) + 1):
-                painter.drawLine(i * self.scale, 0, i * self.scale, 10)
+                painter.drawLine(int(i * self.scale), 0, int(i * self.scale), 10)
 
         # Draw minute ticks and timestamps
         minutes = int(self.duration // 60)
         for i in range(1, minutes + 1):
-            painter.drawLine(i * self.scale * 60, 0, i * self.scale * 60, 20)
+            painter.drawLine(int(i * self.scale * 60), 0, int(i * self.scale * 60), 20)
             if self.scale >= 1:
                 if i % 60 == 0:
                     pass
                 elif i < 60:
                     painter.drawText(
-                        i * self.scale * 60 - 23, 30, "00:" + str(i).zfill(2) + ":00"
+                        int(i * self.scale * 60 - 23), 30, "00:" + str(i).zfill(2) + ":00"
                     )
                 else:
                     painter.drawText(
-                        i * self.scale * 60 - 23,
+                        int(i * self.scale * 60 - 23),
                         30,
                         str(i // 60).zfill(2)
                         + ":"
@@ -118,8 +118,8 @@ class Timeline(QWidget):
         # Draw hour ticks and timestamps
         hours = int(self.duration // 3600)
         for i in range(1, hours + 1):
-            painter.drawLine(i * self.scale * 3600, 0, i * self.scale * 3600, 30)
-            painter.drawText(i * self.scale * 3600 - 23, 43, str(i).zfill(2) + ":00:00")
+            painter.drawLine(int(i * self.scale * 3600), 0, int(i * self.scale * 3600), 30)
+            painter.drawText(int(i * self.scale * 3600 - 23), 43, str(i).zfill(2) + ":00:00")
         
         painter.setPen(QPen(Qt.GlobalColor.white))
         painter.drawLine(0, 48, self.width(), 48)
@@ -193,9 +193,9 @@ class Timeline(QWidget):
                 painter.setPen(QPen(QColor(colours[colourIndex])))
                 painter.setBrush(QBrush(QColor(colours[colourIndex])))
                 painter.drawRect(
-                    start * self.scale,
-                    yOffset + (lane * 30),
-                    (end - start) * self.scale,
+                    int(start * self.scale),
+                    int(yOffset + (lane * 30)),
+                    int((end - start) * self.scale),
                     20,
                 )
                 colourIndex = 0 if colourIndex >= len(colours) - 1 else colourIndex + 1
@@ -208,8 +208,8 @@ class Timeline(QWidget):
                         True
                     )
                     painter.drawText(
-                        start * self.scale + 5,
-                        yOffset + 15 + (lane * 30),
+                        int(start * self.scale + 5),
+                        int(yOffset + 15 + (lane * 30)),
                         str(target + 1),
                     )
 

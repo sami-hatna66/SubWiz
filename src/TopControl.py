@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
 from PyQt5.QtCore import Qt
 from datetime import timedelta
 import os
+import math
 
 
 class TopControl(QWidget):
@@ -169,5 +170,5 @@ class SpeedWidget(QWidget):
                 self.speedList[self.activeButtonIndex]
             )
             self.videoInstance.mediaPlayer.setNotifyInterval(
-                self.speedList[self.activeButtonIndex]
+                math.ceil(self.speedList[self.activeButtonIndex])
             )

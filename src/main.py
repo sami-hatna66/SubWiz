@@ -174,6 +174,11 @@ class MainWindow(QMainWindow):
 
         self.showMaximized()
 
+        # ---------------------------------------------------------------------------------------------------------------
+        self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
+        self.video.initVideo()
+        # ---------------------------------------------------------------------------------------------------------------
+
         self.adjustSubtitle()
 
     # Select srt file and start import thread
@@ -243,8 +248,8 @@ class MainWindow(QMainWindow):
     # Move subtitle label to bottom center of video widget
     def adjustSubtitle(self):
         self.subtitle.move(
-            self.vidContainer.width() / 2 - (self.subtitle.width() / 2),
-            self.vidContainer.height() - self.subtitle.height() - 5,
+            int(self.vidContainer.width() / 2 - (self.subtitle.width() / 2)),
+            int(self.vidContainer.height() - self.subtitle.height() - 5),
         )
 
     # Fix subtitle label position any time window is resized
