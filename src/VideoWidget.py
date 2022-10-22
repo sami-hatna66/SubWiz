@@ -61,13 +61,15 @@ class VideoWidget(QVideoWidget):
         self.path = newPath
 
     def initVideo(self):
+        prevState = self.mediaPlayer.state()
         # Pass new video into OpenCV object
         self.vCap = cv2.VideoCapture(self.path)
         # Clear welcome screen and display video
         self.placeholderLBL.setParent(None)
         self.mediaPlayer.setVideoOutput(self)
         self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.path)))
-        self.mediaPlayer.play()
+        if prevState != QMediaPlayer.PausedState:
+            self.mediaPlayer.play()
         # Adjust timeline for new video
         self.timeline.duration = self.getDuration()
         self.timeline.setFixedWidth(int(self.timeline.duration * self.timeline.scale))

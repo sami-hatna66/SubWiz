@@ -27,6 +27,8 @@ class WaveformWidget(QWidget):
 
     # Audio/video processing is done in separate thread
     def startWorker(self, newPath):
+        self.canDraw = False
+        self.update()
         self.worker.path = newPath
         self.worker.start()
 
@@ -90,5 +92,4 @@ class AudioDataWorker(QThread):
         volumeList = [volume(cut(i)) for i in range(0, int(clip.audio.duration - 2))]
 
         self.completeSignal.emit(volumeList)
-
-        return super().run()
+        self.quit()
