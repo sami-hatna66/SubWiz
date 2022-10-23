@@ -52,14 +52,18 @@ class WaveformWidget(QWidget):
             painter.setPen(QPen(Qt.white))
             painter.drawText(10, 110, "Generating Waveform...")
         else:
+            visibleRegion = self.visibleRegion().boundingRect()
             # Paint audio waveform as a series of adjacent vertical lines
             painter.setPen(QPen(QColor("#61657E")))
             self.setFixedSize(len(self.data), 200)
             maxVal = max(self.data)
-            for i in range(0, len(self.data)):
-                lineStart = int(110 - ((self.data[i] * (200 / maxVal)) / 2))
-                lineEnd = int(110 + ((self.data[i] * (200 / maxVal)) / 2))
-                painter.drawLine(i, lineStart, i, lineEnd)
+            for i in range(visibleRegion.x(), len(self.data)):
+                if i <= visibleRegion.x() + visibleRegion.width():
+                    lineStart = int(110 - ((self.data[i] * (200 / maxVal)) / 2))
+                    lineEnd = int(110 + ((self.data[i] * (200 / maxVal)) / 2))
+                    painter.drawLine(i, lineStart, i, lineEnd)
+                else:
+                    break
             # Draw playhead
             painter.setPen(QPen(Qt.GlobalColor.red))
             painter.drawLine(int(self.playheadPos), 0, int(self.playheadPos), 220)
