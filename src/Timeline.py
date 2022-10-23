@@ -17,6 +17,8 @@ class Timeline(QWidget):
     # Connects to slot which changes media player position to new playhead position
     playheadChangedSignal = pyqtSignal(int, float)
 
+    goToPlayheadSignal = pyqtSignal()
+
     def __init__(self):
         super(Timeline, self).__init__()
 
@@ -39,6 +41,7 @@ class Timeline(QWidget):
             self.scale = self.scaleList[self.scaleIndex]
             self.setPlayheadPos(intermediary)
             self.setFixedSize(int(self.duration * self.scale), 200)
+            self.goToPlayheadSignal.emit()
             self.update()
 
     def zoomOut(self):
@@ -48,6 +51,7 @@ class Timeline(QWidget):
             self.scale = self.scaleList[self.scaleIndex]
             self.setPlayheadPos(intermediary)
             self.setFixedSize(int(self.duration * self.scale), 200)
+            self.goToPlayheadSignal.emit()
             self.update()
 
     def setPlayheadPos(self, pos):
@@ -87,7 +91,7 @@ class Timeline(QWidget):
         timeFont = QFont()
         timeFont.setPixelSize(10)
         painter.setFont(timeFont)
-        painter.setPen(QPen(Qt.GlobalColor.white))
+        painter.setPen(QPen(QColor("#8F8F8F")))
 
         # Draw second ticks
         if self.scale >= 2:
@@ -121,7 +125,6 @@ class Timeline(QWidget):
             painter.drawLine(int(i * self.scale * 3600), 0, int(i * self.scale * 3600), 30)
             painter.drawText(int(i * self.scale * 3600 - 23), 43, str(i).zfill(2) + ":00:00")
         
-        painter.setPen(QPen(Qt.GlobalColor.white))
         painter.drawLine(0, 48, self.width(), 48)
 
         maxTiers = (self.height() - 40) // 40

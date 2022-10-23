@@ -101,6 +101,8 @@ class MainWindow(QMainWindow):
         )
         self.videoTimelineVBL.addWidget(self.bottomControl)
 
+        self.timeline.goToPlayheadSignal.connect(self.bottomControl.goToPlayhead)
+
         # Add leftColumn to main layout
         self.centreHBL.addWidget(self.leftColumn, stretch=2)
 
