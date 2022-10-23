@@ -89,12 +89,15 @@ class MainWindow(QMainWindow):
             self.workPanel.sortedSubtitleList, self.workPanel.subtitleList
         )
 
+        self.waveformWidget = WaveformWidget(self.video)
+
         self.bottomControl = BottomControl(
             self.video,
             self.timelineSA,
             self.timeline,
             self.workPanel,
             self.waveformSA,
+            self.waveformWidget
         )
         self.videoTimelineVBL.addWidget(self.bottomControl)
 
@@ -134,7 +137,7 @@ class MainWindow(QMainWindow):
         self.waveformSA.setFixedHeight(220)
         self.waveformSA.verticalScrollBar().setStyleSheet("height: 0px;")
         self.waveformSA.setStyleSheet("background-color: #2D2E3B;")
-        self.waveformWidget = WaveformWidget(self.video)
+        self.waveformWidget.passInSubtitles(self.workPanel.sortedSubtitleList)
         # When a video file has been loaded in, start thread for generating its waveform
         self.video.mediaLoadedSignal.connect(self.waveformWidget.startWorker)
         self.waveformSA.setWidget(self.waveformWidget)
@@ -232,6 +235,7 @@ class MainWindow(QMainWindow):
         self.timeline.passInSubtitles(
             self.workPanel.sortedSubtitleList, self.workPanel.subtitleList
         )
+        self.waveformWidget.passInSubtitles(self.workPanel.sortedSubtitleList)
         self.timeline.update()
 
     def exportSRT(self):

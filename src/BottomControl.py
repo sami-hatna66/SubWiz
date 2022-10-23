@@ -9,8 +9,9 @@ class BottomControl(QWidget):
     video = None
     workPanel = None
     waveformSA = None
+    waveformWidget = None
 
-    def __init__(self, video, timelineSA, timeline, workPanel, waveformSA):
+    def __init__(self, video, timelineSA, timeline, workPanel, waveformSA, waveformWidget):
         super(BottomControl, self).__init__()
         # Assign args to attributes
         self.timelineSA = timelineSA
@@ -18,6 +19,7 @@ class BottomControl(QWidget):
         self.video = video
         self.workPanel = workPanel
         self.waveformSA = waveformSA
+        self.waveformWidget = waveformWidget
 
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
@@ -25,11 +27,13 @@ class BottomControl(QWidget):
         self.markStartTimeBTN = QPushButton("Add Start Time")
         self.markStartTimeBTN.clicked.connect(self.markStartTime)
         self.markStartTimeBTN.clicked.connect(self.timeline.update)
+        self.markStartTimeBTN.clicked.connect(self.waveformWidget.update)
         self.layout.addWidget(self.markStartTimeBTN)
 
         self.markEndTimeBTN = QPushButton("Add End Time")
         self.markEndTimeBTN.clicked.connect(self.markEndTime)
         self.markEndTimeBTN.clicked.connect(self.timeline.update)
+        self.markEndTimeBTN.clicked.connect(self.waveformWidget.update)
         self.layout.addWidget(self.markEndTimeBTN)
 
         self.goToPlayheadBTN = QPushButton("Go To Playhead")

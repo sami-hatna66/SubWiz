@@ -154,7 +154,8 @@ class Timeline(QWidget):
                             <= visibleRegion.x() + visibleRegion.width() + 50
                         )
                     ):
-                        data.append([start, end, count, sub[3]])
+                        data.append([start, end, count, sub[3], colours[colourIndex]])
+                        colourIndex = 0 if colourIndex >= len(colours) - 1 else colourIndex + 1
                     count += 1
 
             # Arrange overlapping subtitles into lanes
@@ -189,16 +190,16 @@ class Timeline(QWidget):
                 end = lanesData[x][0][1]
                 num = lanesData[x][0][2]
                 id = lanesData[x][0][3]
+                colour = lanesData[x][0][4]
                 lane = lanesData[x][1]
-                painter.setPen(QPen(QColor(colours[colourIndex])))
-                painter.setBrush(QBrush(QColor(colours[colourIndex])))
+                painter.setPen(QPen(QColor(colour)))
+                painter.setBrush(QBrush(QColor(colour)))
                 painter.drawRect(
                     int(start * self.scale),
                     int(yOffset + (lane * 30)),
                     int((end - start) * self.scale),
                     20,
                 )
-                colourIndex = 0 if colourIndex >= len(colours) - 1 else colourIndex + 1
                 painter.setPen(QPen(Qt.GlobalColor.black))
                 font = QFont()
                 font.setPointSize(15)

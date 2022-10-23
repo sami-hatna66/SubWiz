@@ -1,5 +1,5 @@
 import numpy as np
-from PyQt5.QtGui import QPainter, QPen, QColor, QPaintEvent, QMouseEvent
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPaintEvent, QMouseEvent
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from moviepy.editor import VideoFileClip
@@ -12,10 +12,10 @@ class WaveformWidget(QWidget):
     video = None
     clicking = False
 
+    subtitleList = None
+
     def __init__(self, video):
         super(WaveformWidget, self).__init__()
-
-        self.setFixedSize(200, 220)
 
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStyleSheet("background-color: #2D2E3B; border: 0px;")
@@ -25,6 +25,9 @@ class WaveformWidget(QWidget):
 
         self.worker = AudioDataWorker(self.video.path)
         self.worker.completeSignal.connect(self.setAudioData)
+    
+    def passInSubtitles(self, subtitleList):
+        self.subtitleList = subtitleList
 
     # Audio/video processing is done in separate thread
     def startWorker(self, newPath):
@@ -78,9 +81,18 @@ class WaveformWidget(QWidget):
                     painter.drawLine(i, lineStart, i, lineEnd)
                 else:
                     break
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(QBrush(Qt.white))
+            painter.setOpacity(0.1)
+            for sub in self.subtitleList:
+                if sub[0] is not None and sub[1] is not None and sub[0] < sub[1]:
+                    painter.drawRect(int(sub[0] / 1000), 0, int((sub[1] - sub[0]) / 1000), self.height())
+                if (sub[0] / 1000) > visibleRegion.x() + visibleRegion.width():
+                    break 
             # Draw playhead
+            painter.setOpacity(1.0)
             painter.setPen(QPen(Qt.GlobalColor.red))
-            painter.drawLine(int(self.playheadPos), 0, int(self.playheadPos), 220)
+            painter.drawLine(int(self.playheadPos), 0, int(self.playheadPos), self.height())
 
         painter.end()
 
