@@ -280,6 +280,7 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:
         # Prevents segfault on close
         self.waveformWidget.worker.quit()
+        self.video.mediaPlayer.stop()
         return super().closeEvent(event)
 
 
