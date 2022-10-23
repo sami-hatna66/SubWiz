@@ -175,7 +175,7 @@ class MainWindow(QMainWindow):
         self.showMaximized()
 
         # ---------------------------------------------------------------------------------------------------------------
-        self.video.setPath("/Users/sami/Downloads/Swiss Army Man.mp4")
+        self.video.setPath("/Users/sami/Downloads/hearttobreak.mp4")
         self.video.initVideo()
         # ---------------------------------------------------------------------------------------------------------------
 

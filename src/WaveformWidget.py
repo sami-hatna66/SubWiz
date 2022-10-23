@@ -1,5 +1,5 @@
 import numpy as np
-from PyQt5.QtGui import QPainter, QPen, QColor, QPaintEvent
+from PyQt5.QtGui import QPainter, QPen, QColor, QPaintEvent, QMouseEvent
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from moviepy.editor import VideoFileClip
@@ -10,6 +10,7 @@ class WaveformWidget(QWidget):
     data = []
     playheadPos = 0
     video = None
+    clicking = False
 
     def __init__(self, video):
         super(WaveformWidget, self).__init__()
@@ -43,6 +44,19 @@ class WaveformWidget(QWidget):
         if len(self.data) > 0:
             self.playheadPos = newPos / 1000
             self.repaint()
+    
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        if self.canDraw:
+            self.video.mediaPlayer.setPosition(int(event.x() * 1000))
+            self.clicking = True
+    
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        if self.canDraw and self.clicking:
+            self.video.mediaPlayer.setPosition(int(event.x() * 1000))
+    
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        if self.canDraw:
+            self.clicking = False
 
     def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter()
