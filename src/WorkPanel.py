@@ -325,7 +325,7 @@ class WorkPanel(QWidget):
             self.subtitle.hide()
 
     def addSubtitle(
-        self, signalArtefact, start="00:00:00.000", end="00:00:00.000", body=""
+        self, signalArtefact = None, start="00:00:00.000", end="00:00:00.000", body=""
     ):
         # Subtitles will default init with timestamps at 0 and no text
         self.subtitleList.append([start, end, body, self.idCounter])

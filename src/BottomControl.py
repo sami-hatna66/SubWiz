@@ -91,6 +91,7 @@ class BottomControl(QWidget):
             self.workPanel.sortedSubtitleList = sorted(
                 self.workPanel.sortedSubtitleList, key=itemgetter(0)
             )
+        self.timeline.update()
 
     def markEndTime(self):
         for index in self.workPanel.subtitleTable.selectionModel().selectedRows():
@@ -109,3 +110,4 @@ class BottomControl(QWidget):
                     True
                 )
             ][1] = self.video.mediaPlayer.position()
+        self.timeline.update()

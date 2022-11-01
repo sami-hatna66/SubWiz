@@ -1,6 +1,6 @@
 import os.path
-from PyQt5.QtGui import QIcon, QMouseEvent, QCloseEvent
-from PyQt5.QtWidgets import QMainWindow, QTextEdit, QWidget, QHBoxLayout, QScrollArea, QVBoxLayout, QLabel, QPushButton, QMenuBar, QAction, QFileDialog, QApplication, QLineEdit
+from PyQt5.QtGui import QIcon, QMouseEvent, QCloseEvent, QKeySequence
+from PyQt5.QtWidgets import QMainWindow, QTextEdit, QWidget, QHBoxLayout, QScrollArea, QVBoxLayout, QLabel, QPushButton, QMenuBar, QAction, QFileDialog, QApplication, QLineEdit, QShortcut 
 from PyQt5.QtCore import Qt, QEvent, QObject
 from VideoWidget import VideoWidget
 from Timeline import Timeline
@@ -185,6 +185,16 @@ class MainWindow(QMainWindow):
         # ---------------------------------------------------------------------------------------------------------------
 
         self.adjustSubtitle()
+
+        # Keyboard shortcuts
+        self.addSubtitleShortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Equal), self)
+        self.addSubtitleShortcut.activated.connect(self.workPanel.addSubtitle)
+        self.deleteSubtitleShortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_Minus), self)
+        self.deleteSubtitleShortcut.activated.connect(self.workPanel.deleteSubtitle)
+        self.markStartShortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_S), self)
+        self.markStartShortcut.activated.connect(self.bottomControl.markStartTime)
+        self.markEndShortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_E), self)
+        self.markEndShortcut.activated.connect(self.bottomControl.markEndTime)
 
     # Select srt file and start import thread
     def importSRT(self):
