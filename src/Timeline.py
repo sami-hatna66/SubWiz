@@ -153,11 +153,12 @@ class Timeline(QWidget):
                         )
                         or (
                             visibleRegion.x() - 50
-                            <= end * self.y()
+                            <= end * self.scale
                             <= visibleRegion.x() + visibleRegion.width() + 50
                         )
                     ):
                         data.append([start, end, count, sub[3], colours[colourIndex]])
+                        print(sub[3])
                         colourIndex = 0 if colourIndex >= len(colours) - 1 else colourIndex + 1
                     count += 1
 
