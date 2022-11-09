@@ -165,7 +165,6 @@ class Timeline(QWidget):
                         )
                     ):
                         data.append([start, end, count, sub[3], colours[colourIndex]])
-                        print(sub[3])
                         colourIndex = 0 if colourIndex >= len(colours) - 1 else colourIndex + 1
                     count += 1
 

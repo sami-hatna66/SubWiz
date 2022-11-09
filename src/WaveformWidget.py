@@ -33,7 +33,10 @@ class WaveformWidget(QWidget):
     def startWorker(self, newPath):
         self.canDraw = False
         self.update()
-        self.worker.path = newPath
+        self.worker.quit()
+        del self.worker
+        self.worker = AudioDataWorker(newPath)
+        self.worker.completeSignal.connect(self.setAudioData)
         self.worker.start()
 
     # Copy results of processing back to parent of thread ready to be painted
@@ -123,3 +126,6 @@ class AudioDataWorker(QThread):
 
         self.completeSignal.emit(volumeList)
         self.quit()
+    
+    def quit(self) -> None:
+        return super().quit()

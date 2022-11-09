@@ -45,7 +45,6 @@ class VideoWidget(QVideoWidget):
 
     # Update media player position according to position clicked on timeline
     def playheadChangedSlot(self, position, scale):
-        print(int(position * 1000 / scale))
         self.mediaPlayer.setPosition(int(position * 1000 / scale))
 
     # Get duration of video using OpenCV
