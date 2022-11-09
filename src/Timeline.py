@@ -10,12 +10,13 @@ class Timeline(QWidget):
     scaleIndex = 5
     clicking = False
     playheadPos = 0
+    ctrlActive = False
 
     subtitleList = None
     unsortedSubtitleList = None
 
     # Connects to slot which changes media player position to new playhead position
-    playheadChangedSignal = pyqtSignal(int, float)
+    playheadChangedSignal = pyqtSignal(float, float)
 
     goToPlayheadSignal = pyqtSignal()
 
@@ -53,11 +54,17 @@ class Timeline(QWidget):
             self.setFixedSize(int(self.duration * self.scale), 200)
             self.goToPlayheadSignal.emit()
             self.update()
+    
+    def mediaTick(self, pos):
+        self.setPlayheadPos(pos)
+        self.update()
 
     def setPlayheadPos(self, pos):
         # Convert mouse press x position into time on timeline
         pos = pos / 1000 * self.scale
-        pos = pos - pos % self.scale
+        # Press control to snap to second
+        if self.ctrlActive:
+            pos = pos - pos % self.scale
         if pos <= 0:
             self.playheadPos = 0
         elif pos >= self.duration * self.scale:
@@ -72,7 +79,7 @@ class Timeline(QWidget):
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.setPlayheadPos(self.posToTime(event.x()))
         self.update()
-        self.playheadChangedSignal.emit(int(self.playheadPos), self.scale)
+        self.playheadChangedSignal.emit(float(self.playheadPos), self.scale)
         self.clicking = True
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:

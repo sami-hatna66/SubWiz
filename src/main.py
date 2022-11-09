@@ -274,17 +274,19 @@ class MainWindow(QMainWindow):
 
     # If a video is loaded, space and arrow key presses should map to media control functions (unless a text box is active)
     def eventFilter(self, source: 'QObject', event: 'QEvent') -> bool:
-        if (
-            event.type() == QEvent.Type.KeyPress
-            and self.video.path is not None
-            and source is self
-        ):
-            if event.key() == Qt.Key.Key_Space:
-                self.topControl.playPauseAction()
-            elif event.key() == Qt.Key.Key_Right:
-                self.topControl.forward(1)
-            elif event.key() == Qt.Key.Key_Left:
-                self.topControl.back(1)
+        if self.video.path is not None and source is self:
+            if event.type() == QEvent.Type.KeyPress:
+                if event.key() == Qt.Key.Key_Space:
+                    self.topControl.playPauseAction()
+                elif event.key() == Qt.Key.Key_Right:
+                    self.topControl.forward(1)
+                elif event.key() == Qt.Key.Key_Left:
+                    self.topControl.back(1)
+                elif event.key() == Qt.Key.Key_Control:
+                    self.timeline.ctrlActive = True
+            elif event.type() == QEvent.Type.KeyRelease:
+                if event.key() == Qt.Key.Key_Control:
+                    self.timeline.ctrlActive = False
         return False
 
     def mousePressEvent(self, event: QMouseEvent) -> None:

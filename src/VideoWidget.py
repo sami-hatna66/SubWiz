@@ -30,12 +30,13 @@ class VideoWidget(QVideoWidget):
         self.placeholderLBL.setPixmap(self.welcomeImg.scaled(self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
         self.mediaPlayer = QMediaPlayer(None)
+        self.mediaPlayer.setNotifyInterval(100)
 
         self.timeline = timeline
         # Change playback position whenever user does so via timeline
         self.timeline.playheadChangedSignal.connect(self.playheadChangedSlot)
         # Repaint timeline whenever playback position changes
-        self.mediaPlayer.positionChanged.connect(self.timeline.update)
+        self.mediaPlayer.positionChanged.connect(self.timeline.mediaTick)
 
         # For drag-and-dropping video files
         self.setAcceptDrops(True)
@@ -44,6 +45,7 @@ class VideoWidget(QVideoWidget):
 
     # Update media player position according to position clicked on timeline
     def playheadChangedSlot(self, position, scale):
+        print(int(position * 1000 / scale))
         self.mediaPlayer.setPosition(int(position * 1000 / scale))
 
     # Get duration of video using OpenCV
@@ -73,7 +75,6 @@ class VideoWidget(QVideoWidget):
         # Adjust timeline for new video
         self.timeline.duration = self.getDuration()
         self.timeline.setFixedWidth(int(self.timeline.duration * self.timeline.scale))
-        self.mediaPlayer.positionChanged.connect(self.timeline.setPlayheadPos)
         self.timeline.update()
         # Signal starts audio waveform generation
         self.mediaLoadedSignal.emit(self.path)
