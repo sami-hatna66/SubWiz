@@ -195,6 +195,8 @@ class MainWindow(QMainWindow):
         self.markStartShortcut.activated.connect(self.bottomControl.markStartTime)
         self.markEndShortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_E), self)
         self.markEndShortcut.activated.connect(self.bottomControl.markEndTime)
+        self.jumpToSubShortcut = QShortcut(QKeySequence(Qt.CTRL + Qt.Key_J), self)
+        self.jumpToSubShortcut.activated.connect(self.workPanel.jumpToSub)
 
     # Select srt file and start import thread
     def importSRT(self):

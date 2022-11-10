@@ -293,6 +293,20 @@ class WorkPanel(QWidget):
         self.subtitleTable.setColumnWidth(0, self.subtitleTable.columnWidth(0) + 10)
         self.subtitleTable.setColumnWidth(1, self.subtitleTable.columnWidth(1) + 10)
 
+    # Press CTRL+J to jump to the start of the selected subtitle
+    def jumpToSub(self):
+        rows = self.subtitleTable.selectionModel().selectedRows()
+        if len(rows) > 0:
+            start = self.subtitleList[rows[0].row()][0]
+            if validateTimestampFormat(start):
+                if "." not in start:
+                    start += ".00"
+                start = (
+                    datetime.strptime(start, "%H:%M:%S.%f")
+                    - datetime.strptime("00:00:00.00", "%H:%M:%S.%f")
+                ).total_seconds()
+                self.video.mediaPlayer.setPosition(int(start * 1000))
+
     def reassignSortedData(self, newSortedData):
         self.sortedSubtitleList = newSortedData
         self.timeline.passInSubtitles(newSortedData, self.subtitleList)
