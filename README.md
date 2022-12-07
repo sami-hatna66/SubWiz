@@ -1,5 +1,5 @@
 <p align="center">
-<img width="200" alt="SubWiz logo" src="https://user-images.githubusercontent.com/88731772/202248662-4f0fa4fc-8292-4921-aace-bf6b57ada9e5.png">
+<img width="200" alt="SubWiz logo" src="https://user-images.githubusercontent.com/88731772/206220046-b6e7899e-6aa8-4b0a-ba2f-51f7e925ba5c.png">
 </p>
 
 # Subwiz
